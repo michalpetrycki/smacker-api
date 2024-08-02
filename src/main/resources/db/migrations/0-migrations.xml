@@ -1,0 +1,232 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+                        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+    <changeSet author="mpetrycki" id="1.0">
+        <createTable tableName="tool">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="tool_id_pk" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.1" author="mpetrycki">
+        <createTable tableName="product-category">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                    primaryKeyName="product_category_id_pk" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.2" author="mpetrycki">
+        <renameTable oldTableName="product-category" newTableName="product_category" />
+        <addColumn tableName="tool">
+            <column name="tool_name" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+        <addColumn tableName="tool">
+            <column name="product_category_name" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1.3" author="mpetrycki">
+        <createTable tableName="recipe_category">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                    primaryKeyName="recipe_category_id_pk" />
+            </column>
+            <column name="recipe_category_name" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <createTable tableName="image">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="image_id_pk" />
+            </column>
+            <column name="image_url" type="varchar(1050)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.4" author="mpetrycki">
+        <createTable tableName="recipe">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="recipe_id_pk" />
+            </column>
+            <column name="recipe_name" type="varchar(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(500)">
+                <constraints nullable="true" />
+            </column>
+            <column name="recipe_category_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="recipe_category_fk"
+                    references="recipe_category(id)" />
+            </column>
+            <column name="image_id" type="bigint">
+                <constraints nullable="true" foreignKeyName="recipe_image_fk"
+                    references="image(id)" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.5" author="mpetrycki">
+        <createTable tableName="tool_to_recipe">
+            <column name="tool_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="recipe_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="tool_to_recipe" columnNames="tool_id, recipe_id"
+            constraintName="tool_to_recipe_pk"></addPrimaryKey>
+    </changeSet>
+    <changeSet id="1.6" author="mpetrycki">
+        <createTable tableName="product_to_recipe">
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="recipe_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="product_to_recipe" columnNames="product_id, recipe_id"
+            constraintName="product_to_recipe_pk"></addPrimaryKey>
+        <createTable tableName="product">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="product_id_pk" />
+            </column>
+            <column name="product_name" type="varchar(100)">
+                <constraints nullable="false" />
+            </column>
+            <column name="carbs" type="smallint">
+                <constraints nullable="true" />
+            </column>
+            <column name="proteins" type="smallint">
+                <constraints nullable="true" />
+            </column>
+            <column name="fats" type="smallint">
+                <constraints nullable="true" />
+            </column>
+            <column name="image_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="product_category_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="product_category_image_fk"
+                    references="product_category(id)" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1.7" author="mpetrycki">
+        <dropColumn tableName="tool" columnName="product_category_name"></dropColumn>
+    </changeSet>
+    <changeSet id="1.8" author="mpetrycki">
+        <addUniqueConstraint tableName="tool" columnNames="tool_name"></addUniqueConstraint>
+    </changeSet>
+    <changeSet id="1.9" author="mpetrycki">
+        <addColumn tableName="product_category">
+            <column name="product_category_name" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1.10" author="mpetrycki">
+        <addColumn tableName="image">
+            <column name="image_name" type="varchar(50)">
+                <constraints nullable="true" />
+            </column>
+            <column name="creation_timestamp" type="timestamp"
+                defaultValueComputed="CURRENT_TIMESTAMP"></column>
+            <column name="image_data" type="BINARY">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1.11" author="mpetrycki">
+        <dropNotNullConstraint tableName="image" columnName="image_url" />
+    </changeSet>
+    <changeSet id="1.12" author="mpetrycki">
+        <createTable tableName="recipe_to_category">
+            <column name="recipe_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="recipe_to_category" columnNames="recipe_id, category_id"
+            constraintName="recipe_to_category_pk"></addPrimaryKey>
+    </changeSet>
+    <changeSet id="1.13" author="mpetrycki">
+        <dropColumn tableName="recipe" columnName="recipe_category_id"></dropColumn>
+    </changeSet>
+    <changeSet id="1.14" author="mpetrycki">
+        <createTable tableName="product_to_category">
+            <column name="product_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+            <column name="category_id" type="BIGINT">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="product_to_category" columnNames="product_id, category_id"
+            constraintName="product_to_category_pk"></addPrimaryKey>
+    </changeSet>
+    <changeSet id="1.15" author="mpetrycki">
+        <addColumn tableName="product">
+            <column name="description" type="varchar(500)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1.16" author="mpetrycki">
+        <addColumn tableName="product">
+            <column name="fiber" type="smallint">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1.17" author="mpetrycki">
+        <dropColumn tableName="product" columnName="product_category_id"></dropColumn>
+    </changeSet>
+    <changeSet id="1.18" author="mpetrycki">
+        <addColumn tableName="product">
+            <column name="public_identifier" type="uuid">
+                <constraints nullable="false" />
+            </column>
+            <column name="create_timestamp" type="datetime">
+                <constraints nullable="false" />
+            </column>
+            <column name="update_timestamp" type="datetime" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1.19" author="mpetrycki">
+        <addColumn tableName="tool">
+            <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1.20" author="mpetrycki">
+        <renameColumn tableName="product" oldColumnName="create_timestamp" newColumnName="creation_timestamp" />
+    </changeSet>
+
+    <!-- 
+    
+    <changeSet id="1.19" author="mpetrycki"></changeSet>
+    <changeSet id="1.20" author="mpetrycki"></changeSet>
+    <changeSet id="1.21" author="mpetrycki"></changeSet>
+    <changeSet id="1.22" author="mpetrycki"></changeSet>
+    <changeSet id="1.23" author="mpetrycki"></changeSet>
+    <changeSet id="1.24" author="mpetrycki"></changeSet>
+    -->
+
+</databaseChangeLog>
