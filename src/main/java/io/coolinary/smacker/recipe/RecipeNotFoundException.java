@@ -1,7 +1,9 @@
 package io.coolinary.smacker.recipe;
 
+import java.util.UUID;
+
 public class RecipeNotFoundException extends RuntimeException {
-    RecipeNotFoundException(Long id) {
-        super("Could not find recipe: " + id);
+    public RecipeNotFoundException(UUID publicId) {
+        super("Could not find recipe: " + publicId);
     }
 }

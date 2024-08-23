@@ -1,11 +1,13 @@
 package io.coolinary.smacker.recipeCategory;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
-import io.coolinary.smacker.recipe.Recipe;
+import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeService;
 import io.coolinary.smacker.shared.Routes;
 
@@ -45,25 +47,18 @@ public class RecipeCategoryController {
 
     }
 
-    @PostMapping(Routes.RECIPE_CATEGORIES + Routes.ID + Routes.RECIPES)
-    public ResponseEntity<Recipe> createRecipe(@PathVariable("id") Long categoryId, @RequestBody Recipe recipeRequest) {
+    @PostMapping(Routes.RECIPE_CATEGORIES + Routes.PID + Routes.RECIPES)
+    public ResponseEntity<RecipeEntity> createRecipe(@PathVariable("publicId") UUID recipeCategoryPublicId,
+            @RequestBody RecipeEntity recipeRequest) {
 
         try {
-            RecipeCategory category = recipeCategoryService.getById(categoryId);
-            Long recipeId = recipeRequest.getId();
+            RecipeCategory category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
+            RecipeEntity recipe = recipeService.createRecipe(recipeRequest);
+            category.addRecipe(recipe);
+            recipeCategoryService.updateRecipeCategory(category);
 
-            // if (recipeId != null && recipeId.longValue() != 0L) {
-            if (recipeId.longValue() != 0L) {
-
-                Recipe _recipe = this.recipeService.getById(recipeId);
-                category.addRecipe(_recipe);
-                recipeCategoryService.updateRecipeCategory(categoryId, category);
-                return new ResponseEntity<Recipe>(_recipe, HttpStatus.OK);
-
-            }
-
-            category.addRecipe(recipeRequest);
-            return new ResponseEntity<Recipe>(recipeService.createRecipe(recipeRequest), HttpStatus.OK);
+            return new ResponseEntity<RecipeEntity>(recipe,
+                    HttpStatus.OK);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -84,35 +79,37 @@ public class RecipeCategoryController {
         }
     }
 
-    @GetMapping(Routes.RECIPE_CATEGORIES + Routes.ID)
-    public ResponseEntity<RecipeCategory> getCategory(@PathVariable("id") Long id) {
-        return new ResponseEntity<RecipeCategory>(this.recipeCategoryService.getById(id), HttpStatus.OK);
+    @GetMapping(Routes.RECIPE_CATEGORIES + Routes.PID)
+    public ResponseEntity<RecipeCategory> getCategory(@PathVariable("publicId") UUID publicId) {
+        return new ResponseEntity<RecipeCategory>(this.recipeCategoryService.getByPublicId(publicId),
+                HttpStatus.OK);
     }
 
     @GetMapping(Routes.RECIPE_CATEGORIES + Routes.ID + Routes.RECIPES)
-    public ResponseEntity<List<Recipe>> getAllRecipesByCategoryId(@PathVariable("id") Long categoryId) {
-        if (!this.recipeCategoryService.existsById(categoryId)) {
-            throw new RecipeCategoryNotFoundException(categoryId);
+    public ResponseEntity<List<RecipeEntity>> getAllRecipesByCategoryId(@PathVariable("id") UUID publicId) {
+        if (!this.recipeCategoryService.existsByPublicId(publicId)) {
+            throw new RecipeCategoryNotFoundException(publicId);
         }
-        return new ResponseEntity<List<Recipe>>(this.recipeService.getRecipesByCategoriesId(categoryId),
+        return new ResponseEntity<List<RecipeEntity>>(this.recipeService.getRecipesByCategoriesId(publicId),
                 HttpStatus.CREATED);
     }
 
-    @PutMapping(Routes.RECIPE_CATEGORIES + Routes.ID)
-    public ResponseEntity<RecipeCategory> replaceCategory(@PathVariable("id") Long id,
+    @PutMapping(Routes.RECIPE_CATEGORIES + Routes.PID)
+    public ResponseEntity<RecipeCategory> replaceCategory(@PathVariable("publicId") UUID publicId,
             @RequestBody RecipeCategory newCategory) {
 
-        RecipeCategory _category = this.recipeCategoryService.getById(id);
+        RecipeCategory _category = this.recipeCategoryService.getByPublicId(publicId);
         _category.setName(newCategory.getName());
         return new ResponseEntity<RecipeCategory>(
-                this.recipeCategoryService.updateRecipeCategory(id, _category),
+                this.recipeCategoryService.updateRecipeCategory(_category),
                 HttpStatus.OK);
 
     }
 
-    @DeleteMapping(Routes.RECIPE_CATEGORIES + Routes.ID)
-    public ResponseEntity<Boolean> deleteCategory(@PathVariable("id") Long id) {
-        return new ResponseEntity<Boolean>(this.recipeCategoryService.deleteRecipeCategory(id), HttpStatus.NO_CONTENT);
+    @DeleteMapping(Routes.RECIPE_CATEGORIES + Routes.PID)
+    public ResponseEntity<Boolean> deleteCategory(@PathVariable("publicId") UUID publicId) {
+        return new ResponseEntity<Boolean>(this.recipeCategoryService.deleteRecipeCategoryByPublicId(publicId),
+                HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(Routes.RECIPE_CATEGORIES + Routes.ALL)
@@ -121,12 +118,14 @@ public class RecipeCategoryController {
                 HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping(Routes.RECIPE_CATEGORIES + Routes.ID + Routes.RECIPES + Routes.RECIPE_ID)
-    public ResponseEntity<HttpStatus> deleteRecipeFromCategory(@PathVariable("id") Long id,
-            @PathVariable("recipeId") Long recipeId) {
-        RecipeCategory category = recipeCategoryService.getById(id);
-        category.removeRecipe(recipeId);
-        recipeCategoryService.updateRecipeCategory(id, category);
+    @DeleteMapping(Routes.RECIPE_CATEGORIES + Routes.RECIPE_CATEGORY_PUBLIC_ID + Routes.RECIPES +
+            Routes.RECIPE_PUBLIC_ID)
+    public ResponseEntity<HttpStatus> deleteRecipeFromCategory(
+            @PathVariable("recipeCategoryPublicId") UUID recipeCategoryPublicId,
+            @PathVariable("recipePublicId") UUID recipePublicId) {
+        RecipeCategory category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
+        category.removeRecipe(recipePublicId);
+        recipeCategoryService.updateRecipeCategory(category);
         return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
     }
 

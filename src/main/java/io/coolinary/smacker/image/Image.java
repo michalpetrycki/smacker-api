@@ -2,14 +2,21 @@ package io.coolinary.smacker.image;
 
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class Image {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
@@ -21,9 +28,8 @@ public class Image {
     private Instant creationTimestamp;
     @Column(name = "image_data", length = 1000)
     private byte[] data;
-
-    Image() {
-    }
+    @Column(name = "public_identifier")
+    private UUID publicId;
 
     Image(String imageName, String url, Instant creationTimestamp) {
         this.imageName = imageName;
@@ -41,46 +47,6 @@ public class Image {
         this.imageName = imageName;
         this.url = url;
         this.creationTimestamp = creationTimestamp;
-        this.data = data;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
-
-    public void setImageName(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public Instant getCreationTimestamp() {
-        return creationTimestamp;
-    }
-
-    public void setCreationTimestamp(Instant creationTimestamp) {
-        this.creationTimestamp = creationTimestamp;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public void setData(byte[] data) {
         this.data = data;
     }
 

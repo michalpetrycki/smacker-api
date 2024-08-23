@@ -1,6 +1,7 @@
 package io.coolinary.smacker.recipeCategory;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.HashSet;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
@@ -9,17 +10,27 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.CascadeType;
-import io.coolinary.smacker.recipe.Recipe;
+import io.coolinary.smacker.recipe.RecipeEntity;
+import io.coolinary.smacker.recipe.RecipeNotFoundException;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class RecipeCategory {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "recipe_category_name")
     private String name;
+
+    @Column(name = "public_identifier")
+    private UUID publicId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -27,46 +38,20 @@ public class RecipeCategory {
     })
     @JoinTable(name = "recipe_to_category", joinColumns = { @JoinColumn(name = "category_id") }, inverseJoinColumns = {
             @JoinColumn(name = "recipe_id") })
-    private Set<Recipe> recipes = new HashSet<Recipe>();
-
-    RecipeCategory() {
-    }
+    private Set<RecipeEntity> recipes = new HashSet<RecipeEntity>();
 
     RecipeCategory(String name) {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<Recipe> getRecipes() {
-        return recipes;
-    }
-
-    public void setRecipes(Set<Recipe> recipes) {
-        this.recipes = recipes;
-    }
-
-    public void addRecipe(Recipe recipe) {
+    public void addRecipe(RecipeEntity recipe) {
         this.recipes.add(recipe);
         recipe.getCategories().add(this);
     }
 
-    public void removeRecipe(Long recipeId) {
-        Recipe recipe = this.recipes.stream().filter(r -> r.getId() == recipeId).findFirst().orElse(null);
+    public void removeRecipe(UUID recipePublicId) {
+        RecipeEntity recipe = this.recipes.stream().filter(r -> r.getPublicId() == recipePublicId).findFirst()
+                .orElseThrow(() -> new RecipeNotFoundException(recipePublicId));
         if (recipe != null) {
             this.recipes.remove(recipe);
             recipe.getCategories().remove(this);

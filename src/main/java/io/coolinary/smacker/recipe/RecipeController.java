@@ -1,6 +1,8 @@
 package io.coolinary.smacker.recipe;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
@@ -33,10 +35,10 @@ public class RecipeController {
     private Logger logger = LoggerFactory.getLogger(RecipeController.class);
 
     @PostMapping(Routes.RECIPES)
-    public ResponseEntity<Recipe> createRecipe(@RequestBody Recipe newRecipe) {
+    public ResponseEntity<RecipeEntity> createRecipe(@RequestBody RecipeEntity newRecipe) {
 
         try {
-            return new ResponseEntity<Recipe>(this.recipeService.createRecipe(newRecipe),
+            return new ResponseEntity<RecipeEntity>(this.recipeService.createRecipe(newRecipe),
                     HttpStatus.CREATED);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);
@@ -46,9 +48,10 @@ public class RecipeController {
     }
 
     @GetMapping(Routes.RECIPES)
-    ResponseEntity<List<Recipe>> getAllRecipes() {
+    ResponseEntity<List<RecipeEntity>> getAllRecipes() {
         try {
-            return new ResponseEntity<List<Recipe>>(this.recipeService.getAll().stream().collect(Collectors.toList()),
+            return new ResponseEntity<List<RecipeEntity>>(
+                    this.recipeService.getAll().stream().collect(Collectors.toList()),
                     HttpStatus.OK);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);
@@ -56,35 +59,38 @@ public class RecipeController {
         }
     }
 
-    @GetMapping(Routes.RECIPES + Routes.ID)
-    public ResponseEntity<Recipe> getRecipe(@PathVariable("id") Long id) {
-        return new ResponseEntity<Recipe>(this.recipeService.getById(id), HttpStatus.OK);
+    @GetMapping(Routes.RECIPES + Routes.PID)
+    public ResponseEntity<RecipeEntity> getRecipe(@PathVariable("publicId") UUID publicId) {
+        return new ResponseEntity<RecipeEntity>(this.recipeService.getByPublicId(publicId), HttpStatus.OK);
     }
 
-    @GetMapping(Routes.RECIPES + Routes.ID + Routes.RECIPE_CATEGORIES)
-    public ResponseEntity<List<RecipeCategory>> getAllCategoriesByRecipeId(@PathVariable("id") Long recipeId) {
-        if (!this.recipeService.existsById(recipeId)) {
-            throw new RecipeNotFoundException(recipeId);
+    @GetMapping(Routes.RECIPES + Routes.PID + Routes.RECIPE_CATEGORIES)
+    public ResponseEntity<List<RecipeCategory>> getAllCategoriesByRecipeId(
+            @PathVariable("publicId") UUID recipePublicId) {
+        if (!this.recipeService.existsByPublicId(recipePublicId)) {
+            throw new RecipeNotFoundException(recipePublicId);
         }
-        return new ResponseEntity<List<RecipeCategory>>(this.recipeCategoryService.getCategoriesByRecipeId(recipeId),
+        return new ResponseEntity<List<RecipeCategory>>(
+                this.recipeCategoryService.getCategoriesByRecipePublicId(recipePublicId),
                 HttpStatus.CREATED);
     }
 
-    @PutMapping(Routes.RECIPES + Routes.ID)
-    public ResponseEntity<Recipe> updateRecipe(@PathVariable("id") Long id, @RequestBody Recipe recipeRequest) {
+    @PutMapping(Routes.RECIPES + Routes.PID)
+    public ResponseEntity<RecipeEntity> updateRecipe(@PathVariable("publicId") UUID publicId,
+            @RequestBody RecipeEntity recipeRequest) {
 
-        Recipe _recipe = this.recipeService.getById(id);
+        RecipeEntity _recipe = this.recipeService.getByPublicId(publicId);
         if (_recipe == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         _recipe.setName(recipeRequest.getName());
-        return new ResponseEntity<Recipe>(this.recipeService.updateRecipe(id, _recipe), HttpStatus.OK);
+        return new ResponseEntity<RecipeEntity>(this.recipeService.updateRecipe(_recipe), HttpStatus.OK);
     }
 
-    @DeleteMapping(Routes.RECIPES + Routes.ID)
-    public ResponseEntity<Boolean> deleteRecipe(@PathVariable("id") Long id) {
-        return new ResponseEntity<Boolean>(this.recipeService.deleteRecipe(id), HttpStatus.NO_CONTENT);
+    @DeleteMapping(Routes.RECIPES + Routes.PID)
+    public ResponseEntity<Boolean> deleteRecipe(@PathVariable("publicId") UUID publicId) {
+        return new ResponseEntity<Boolean>(this.recipeService.deleteRecipe(publicId), HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(Routes.RECIPES + Routes.ALL)

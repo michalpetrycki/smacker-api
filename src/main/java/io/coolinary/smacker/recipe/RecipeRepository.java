@@ -1,10 +1,17 @@
 package io.coolinary.smacker.recipe;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RecipeRepository extends JpaRepository<Recipe, Long> {
+public interface RecipeRepository extends JpaRepository<RecipeEntity, Long> {
 
-    List<Recipe> findRecipesByCategoriesId(Long categoryId);
+    Optional<RecipeEntity> findByPublicId(UUID publicId);
+
+    List<RecipeEntity> findRecipesByCategoriesPublicId(UUID categoryPublicId);
+
+    void deleteByPublicId(UUID publicId);
 
 }

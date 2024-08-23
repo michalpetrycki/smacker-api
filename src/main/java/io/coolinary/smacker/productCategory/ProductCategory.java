@@ -2,6 +2,7 @@ package io.coolinary.smacker.productCategory;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import io.coolinary.smacker.product.ProductEntity;
 import jakarta.persistence.CascadeType;
@@ -14,13 +15,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class ProductCategory {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "product_category_name")
     private String name;
+
+    @Column(name = "public_identifier")
+    private UUID publicId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -34,40 +44,17 @@ public class ProductCategory {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String categoryName) {
-        this.name = categoryName;
-    }
-
-    public Set<ProductEntity> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<ProductEntity> products) {
-        this.products = products;
-    }
-
     public void addProduct(ProductEntity product) {
         this.products.add(product);
         // product.getCategories().add(this);
     }
 
     public void removeProduct(Long productId) {
-        // Product product = this.products.stream().filter(r -> r.getId() == productId).findFirst().orElse(null);
+        // Product product = this.products.stream().filter(r -> r.getId() ==
+        // productId).findFirst().orElse(null);
         // if (product != null) {
-        //     this.products.remove(product);
-        //     product.getCategories().remove(this);
+        // this.products.remove(product);
+        // product.getCategories().remove(this);
         // }
     }
 

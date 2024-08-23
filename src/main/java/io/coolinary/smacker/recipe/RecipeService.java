@@ -1,6 +1,8 @@
 package io.coolinary.smacker.recipe;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,33 +12,34 @@ public class RecipeService {
     @Autowired
     RecipeRepository recipeRepository;
 
-    List<Recipe> getAll() {
+    List<RecipeEntity> getAll() {
         return this.recipeRepository.findAll();
     }
 
-    public boolean existsById(Long id) {
-        return this.recipeRepository.findById(id).orElseThrow(() -> new RecipeNotFoundException(id)) != null;
+    public boolean existsByPublicId(UUID publicId) {
+        return this.recipeRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new RecipeNotFoundException(publicId)) != null;
     }
 
-    public Recipe getById(Long id) {
-        return this.recipeRepository.findById(id).orElseThrow(() -> new RecipeNotFoundException(id));
+    public RecipeEntity getByPublicId(UUID publicId) {
+        return this.recipeRepository.findByPublicId(publicId).orElseThrow(() -> new RecipeNotFoundException(publicId));
     }
 
-    public List<Recipe> getRecipesByCategoriesId(Long categoryId) {
-        return this.recipeRepository.findRecipesByCategoriesId(categoryId);
+    public List<RecipeEntity> getRecipesByCategoriesId(UUID categoryId) {
+        return this.recipeRepository.findRecipesByCategoriesPublicId(categoryId);
     }
 
-    public Recipe createRecipe(Recipe recipe) {
+    public RecipeEntity createRecipe(RecipeEntity recipe) {
         return this.recipeRepository.save(recipe);
     }
 
-    Recipe updateRecipe(Long id, Recipe recipe) {
+    RecipeEntity updateRecipe(RecipeEntity recipe) {
         return this.recipeRepository.save(recipe);
     }
 
-    Boolean deleteRecipe(Long id) {
+    Boolean deleteRecipe(UUID publicId) {
         try {
-            this.recipeRepository.deleteById(id);
+            this.recipeRepository.deleteByPublicId(publicId);
             return true;
         } catch (IllegalArgumentException ex) {
             return false;

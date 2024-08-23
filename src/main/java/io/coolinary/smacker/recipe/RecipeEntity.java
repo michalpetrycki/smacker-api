@@ -1,6 +1,7 @@
 package io.coolinary.smacker.recipe;
 
 import java.util.Set;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,19 +11,27 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import io.coolinary.smacker.recipeCategory.RecipeCategory;
 
 @Entity
-public class Recipe {
+@NoArgsConstructor
+@Getter
+@Setter
+public class RecipeEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "recipe_name")
     private String name;
     @Column(name = "description")
     private String description;
+    @Column(name = "public_identifier")
+    private UUID publicId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -30,41 +39,6 @@ public class Recipe {
     }, mappedBy = "recipes")
     @JsonIgnore
     private Set<RecipeCategory> categories = new HashSet<>();
-
-    Recipe() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<RecipeCategory> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<RecipeCategory> categories) {
-        this.categories = categories;
-    }
 
     @Override
     public int hashCode() {
@@ -84,7 +58,7 @@ public class Recipe {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Recipe other = (Recipe) obj;
+        RecipeEntity other = (RecipeEntity) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

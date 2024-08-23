@@ -219,6 +219,32 @@
         <renameColumn tableName="product" oldColumnName="create_timestamp" newColumnName="creation_timestamp" />
     </changeSet>
 
+    <changeSet id="1.21" author="mpetrycki">
+        <addColumn tableName="recipe">
+            <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="recipe_category">
+            <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="product_category">
+            <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addColumn tableName="image">
+            <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
     <!-- 
     
     <changeSet id="1.19" author="mpetrycki"></changeSet>

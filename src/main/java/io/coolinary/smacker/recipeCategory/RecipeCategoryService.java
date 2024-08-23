@@ -1,6 +1,8 @@
 package io.coolinary.smacker.recipeCategory;
 
 import java.util.List;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,29 +16,31 @@ public class RecipeCategoryService {
         return this.recipeCategoryRepository.findAll();
     }
 
-    public boolean existsById(Long id) {
-        return this.recipeCategoryRepository.findById(id).orElseThrow(() -> new RecipeCategoryNotFoundException(id)) != null;
+    public boolean existsByPublicId(UUID publicId) {
+        return this.recipeCategoryRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new RecipeCategoryNotFoundException(publicId)) != null;
     }
 
-    public RecipeCategory getById(Long id) {
-        return this.recipeCategoryRepository.findById(id).orElseThrow(() -> new RecipeCategoryNotFoundException(id));
+    public RecipeCategory getByPublicId(UUID publicId) {
+        return this.recipeCategoryRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new RecipeCategoryNotFoundException(publicId));
     }
 
-    public List<RecipeCategory> getCategoriesByRecipeId(Long recipeId) {
-        return this.recipeCategoryRepository.findCategoriesByRecipesId(recipeId);
+    public List<RecipeCategory> getCategoriesByRecipePublicId(UUID recipePublicId) {
+        return this.recipeCategoryRepository.findCategoriesByRecipesPublicId(recipePublicId);
     }
 
     RecipeCategory createRecipeCategory(RecipeCategory recipeCategory) {
         return this.recipeCategoryRepository.save(recipeCategory);
     }
 
-    public RecipeCategory updateRecipeCategory(Long id, RecipeCategory recipeCategory) {
+    public RecipeCategory updateRecipeCategory(RecipeCategory recipeCategory) {
         return this.recipeCategoryRepository.save(recipeCategory);
     }
 
-    Boolean deleteRecipeCategory(Long id) {
+    Boolean deleteRecipeCategoryByPublicId(UUID publicId) {
         try {
-            this.recipeCategoryRepository.deleteById(id);
+            this.recipeCategoryRepository.deleteByPublicId(publicId);
             return true;
         } catch (IllegalArgumentException ex) {
             return false;
