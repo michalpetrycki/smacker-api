@@ -12,7 +12,7 @@ public class RecipeCategoryService {
     @Autowired
     RecipeCategoryRepository recipeCategoryRepository;
 
-    List<RecipeCategory> getAll() {
+    List<RecipeCategoryEntity> getAll() {
         return this.recipeCategoryRepository.findAll();
     }
 
@@ -21,20 +21,21 @@ public class RecipeCategoryService {
                 .orElseThrow(() -> new RecipeCategoryNotFoundException(publicId)) != null;
     }
 
-    public RecipeCategory getByPublicId(UUID publicId) {
+    public RecipeCategoryEntity getByPublicId(UUID publicId) {
         return this.recipeCategoryRepository.findByPublicId(publicId)
                 .orElseThrow(() -> new RecipeCategoryNotFoundException(publicId));
     }
 
-    public List<RecipeCategory> getCategoriesByRecipePublicId(UUID recipePublicId) {
+    public List<RecipeCategoryEntity> getCategoriesByRecipePublicId(UUID recipePublicId) {
         return this.recipeCategoryRepository.findCategoriesByRecipesPublicId(recipePublicId);
     }
 
-    RecipeCategory createRecipeCategory(RecipeCategory recipeCategory) {
-        return this.recipeCategoryRepository.save(recipeCategory);
+    RecipeCategoryEntity createRecipeCategory(RecipeCategoryAPI recipeCategoryAPI) {
+        RecipeCategoryEntity category = toRecipeCategoryEntity(recipeCategoryAPI);
+        return this.recipeCategoryRepository.save(category);
     }
 
-    public RecipeCategory updateRecipeCategory(RecipeCategory recipeCategory) {
+    public RecipeCategoryEntity updateRecipeCategory(RecipeCategoryEntity recipeCategory) {
         return this.recipeCategoryRepository.save(recipeCategory);
     }
 
@@ -51,6 +52,13 @@ public class RecipeCategoryService {
     Boolean deleteAllRecipeCategories() {
         this.recipeCategoryRepository.deleteAll();
         return true;
+    }
+
+    RecipeCategoryEntity toRecipeCategoryEntity(RecipeCategoryAPI categoryAPI) {
+        RecipeCategoryEntity.RecipeCategoryEntityBuilder categoryBuilder = RecipeCategoryEntity.builder();
+        categoryBuilder.name(categoryAPI.name());
+        return categoryBuilder.build();
+
     }
 
 }

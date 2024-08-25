@@ -18,7 +18,7 @@ import lombok.Setter;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import io.coolinary.smacker.recipeCategory.RecipeCategory;
+import io.coolinary.smacker.recipeCategory.RecipeCategoryEntity;
 
 @Entity
 @NoArgsConstructor
@@ -40,7 +40,7 @@ public class RecipeEntity {
             CascadeType.MERGE
     }, mappedBy = "recipes")
     @JsonIgnore
-    private Set<RecipeCategory> categories = new HashSet<>();
+    private Set<RecipeCategoryEntity> categories = new HashSet<>();
 
     @Override
     public int hashCode() {

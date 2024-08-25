@@ -10,6 +10,9 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,16 +23,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
 @Entity
-@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-public class RecipeCategory {
+@Table(name = "recipe_category")
+@Builder
+public class RecipeCategoryEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "recipe_category_name")
     private String name;
 
-    @Column(name = "public_identifier")
+    @Column(name = "public_identifier", insertable = false)
     private UUID publicId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
@@ -40,7 +45,7 @@ public class RecipeCategory {
             @JoinColumn(name = "recipe_id") })
     private Set<RecipeEntity> recipes = new HashSet<RecipeEntity>();
 
-    RecipeCategory(String name) {
+    RecipeCategoryEntity(String name) {
         this.name = name;
     }
 
@@ -75,7 +80,7 @@ public class RecipeCategory {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RecipeCategory other = (RecipeCategory) obj;
+        RecipeCategoryEntity other = (RecipeCategoryEntity) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

@@ -6,11 +6,11 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RecipeCategoryRepository extends JpaRepository<RecipeCategory, Long> {
+public interface RecipeCategoryRepository extends JpaRepository<RecipeCategoryEntity, Long> {
 
-    List<RecipeCategory> findCategoriesByRecipesPublicId(UUID recipePublicId);
+    List<RecipeCategoryEntity> findCategoriesByRecipesPublicId(UUID recipePublicId);
 
-    Optional<RecipeCategory> findByPublicId(UUID publicId);
+    Optional<RecipeCategoryEntity> findByPublicId(UUID publicId);
 
     void deleteByPublicId(UUID publicId);
 

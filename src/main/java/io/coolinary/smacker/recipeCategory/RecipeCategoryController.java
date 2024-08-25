@@ -34,11 +34,12 @@ public class RecipeCategoryController {
     private final Logger logger = LoggerFactory.getLogger(RecipeCategoryController.class);
 
     @PostMapping(Routes.RECIPE_CATEGORIES)
-    public ResponseEntity<RecipeCategory> createRecipeCategory(@RequestBody RecipeCategory newCategory) {
+    public ResponseEntity<RecipeCategoryEntity> createRecipeCategory(@RequestBody RecipeCategoryAPI newCategory) {
 
         try {
             System.out.println("create done");
-            return new ResponseEntity<RecipeCategory>(this.recipeCategoryService.createRecipeCategory(newCategory),
+            return new ResponseEntity<RecipeCategoryEntity>(
+                    this.recipeCategoryService.createRecipeCategory(newCategory),
                     HttpStatus.CREATED);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);
@@ -52,7 +53,7 @@ public class RecipeCategoryController {
             @RequestBody RecipeEntity recipeRequest) {
 
         try {
-            RecipeCategory category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
+            RecipeCategoryEntity category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
             RecipeEntity recipe = recipeService.createRecipe(recipeRequest);
             category.addRecipe(recipe);
             recipeCategoryService.updateRecipeCategory(category);
@@ -67,10 +68,10 @@ public class RecipeCategoryController {
     }
 
     @GetMapping(Routes.RECIPE_CATEGORIES)
-    public ResponseEntity<List<RecipeCategory>> getAllRecipeCategories() {
+    public ResponseEntity<List<RecipeCategoryEntity>> getAllRecipeCategories() {
 
         try {
-            return new ResponseEntity<List<RecipeCategory>>(
+            return new ResponseEntity<List<RecipeCategoryEntity>>(
                     this.recipeCategoryService.getAll().stream().collect(Collectors.toList()),
                     HttpStatus.OK);
         } catch (Exception ex) {
@@ -80,8 +81,8 @@ public class RecipeCategoryController {
     }
 
     @GetMapping(Routes.RECIPE_CATEGORIES + Routes.PID)
-    public ResponseEntity<RecipeCategory> getCategory(@PathVariable("publicId") UUID publicId) {
-        return new ResponseEntity<RecipeCategory>(this.recipeCategoryService.getByPublicId(publicId),
+    public ResponseEntity<RecipeCategoryEntity> getCategory(@PathVariable("publicId") UUID publicId) {
+        return new ResponseEntity<RecipeCategoryEntity>(this.recipeCategoryService.getByPublicId(publicId),
                 HttpStatus.OK);
     }
 
@@ -95,12 +96,12 @@ public class RecipeCategoryController {
     }
 
     @PutMapping(Routes.RECIPE_CATEGORIES + Routes.PID)
-    public ResponseEntity<RecipeCategory> replaceCategory(@PathVariable("publicId") UUID publicId,
-            @RequestBody RecipeCategory newCategory) {
+    public ResponseEntity<RecipeCategoryEntity> replaceCategory(@PathVariable("publicId") UUID publicId,
+            @RequestBody RecipeCategoryEntity newCategory) {
 
-        RecipeCategory _category = this.recipeCategoryService.getByPublicId(publicId);
+        RecipeCategoryEntity _category = this.recipeCategoryService.getByPublicId(publicId);
         _category.setName(newCategory.getName());
-        return new ResponseEntity<RecipeCategory>(
+        return new ResponseEntity<RecipeCategoryEntity>(
                 this.recipeCategoryService.updateRecipeCategory(_category),
                 HttpStatus.OK);
 
@@ -123,7 +124,7 @@ public class RecipeCategoryController {
     public ResponseEntity<HttpStatus> deleteRecipeFromCategory(
             @PathVariable("recipeCategoryPublicId") UUID recipeCategoryPublicId,
             @PathVariable("recipePublicId") UUID recipePublicId) {
-        RecipeCategory category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
+        RecipeCategoryEntity category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
         category.removeRecipe(recipePublicId);
         recipeCategoryService.updateRecipeCategory(category);
         return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
