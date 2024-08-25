@@ -65,8 +65,8 @@ public class RecipeController {
         return new ResponseEntity<RecipeEntity>(this.recipeService.getByPublicId(publicId), HttpStatus.OK);
     }
 
-    @GetMapping(Routes.RECIPE_CATEGORIES + Routes.ID + Routes.RECIPES)
-    public ResponseEntity<List<RecipeEntity>> getAllRecipesByCategoryId(@PathVariable("id") UUID publicId) {
+    @GetMapping(Routes.RECIPE_CATEGORIES + Routes.PID + Routes.RECIPES)
+    public ResponseEntity<List<RecipeEntity>> getAllRecipesByCategoryId(@PathVariable("publicId") UUID publicId) {
         if (!this.recipeCategoryService.existsByPublicId(publicId)) {
             throw new RecipeCategoryNotFoundException(publicId);
         }
