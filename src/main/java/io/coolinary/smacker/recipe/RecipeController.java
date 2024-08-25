@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import io.coolinary.smacker.recipeCategory.RecipeCategoryEntity;
+import io.coolinary.smacker.recipeCategory.RecipeCategoryNotFoundException;
 import io.coolinary.smacker.recipeCategory.RecipeCategoryService;
 import io.coolinary.smacker.shared.Routes;
 
@@ -64,14 +65,12 @@ public class RecipeController {
         return new ResponseEntity<RecipeEntity>(this.recipeService.getByPublicId(publicId), HttpStatus.OK);
     }
 
-    @GetMapping(Routes.RECIPES + Routes.PID + Routes.RECIPE_CATEGORIES)
-    public ResponseEntity<List<RecipeCategoryEntity>> getAllCategoriesByRecipeId(
-            @PathVariable("publicId") UUID recipePublicId) {
-        if (!this.recipeService.existsByPublicId(recipePublicId)) {
-            throw new RecipeNotFoundException(recipePublicId);
+    @GetMapping(Routes.RECIPE_CATEGORIES + Routes.ID + Routes.RECIPES)
+    public ResponseEntity<List<RecipeEntity>> getAllRecipesByCategoryId(@PathVariable("id") UUID publicId) {
+        if (!this.recipeCategoryService.existsByPublicId(publicId)) {
+            throw new RecipeCategoryNotFoundException(publicId);
         }
-        return new ResponseEntity<List<RecipeCategoryEntity>>(
-                this.recipeCategoryService.getCategoriesByRecipePublicId(recipePublicId),
+        return new ResponseEntity<List<RecipeEntity>>(this.recipeService.getRecipesByCategoriesId(publicId),
                 HttpStatus.CREATED);
     }
 

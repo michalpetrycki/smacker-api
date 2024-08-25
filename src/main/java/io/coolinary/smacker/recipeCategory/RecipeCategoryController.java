@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import io.coolinary.smacker.recipe.RecipeEntity;
+import io.coolinary.smacker.recipe.RecipeNotFoundException;
 import io.coolinary.smacker.recipe.RecipeService;
 import io.coolinary.smacker.shared.Routes;
 
@@ -87,12 +88,14 @@ public class RecipeCategoryController {
                 HttpStatus.OK);
     }
 
-    @GetMapping(Routes.RECIPE_CATEGORIES + Routes.ID + Routes.RECIPES)
-    public ResponseEntity<List<RecipeEntity>> getAllRecipesByCategoryId(@PathVariable("id") UUID publicId) {
-        if (!this.recipeCategoryService.existsByPublicId(publicId)) {
-            throw new RecipeCategoryNotFoundException(publicId);
+    @GetMapping(Routes.RECIPES + Routes.PID + Routes.RECIPE_CATEGORIES)
+    public ResponseEntity<List<RecipeCategoryEntity>> getAllCategoriesByRecipeId(
+            @PathVariable("publicId") UUID recipePublicId) {
+        if (!this.recipeService.existsByPublicId(recipePublicId)) {
+            throw new RecipeNotFoundException(recipePublicId);
         }
-        return new ResponseEntity<List<RecipeEntity>>(this.recipeService.getRecipesByCategoriesId(publicId),
+        return new ResponseEntity<List<RecipeCategoryEntity>>(
+                this.recipeCategoryService.getCategoriesByRecipePublicId(recipePublicId),
                 HttpStatus.CREATED);
     }
 
