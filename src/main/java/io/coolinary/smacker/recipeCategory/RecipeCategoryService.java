@@ -30,8 +30,9 @@ public class RecipeCategoryService {
         return this.recipeCategoryRepository.findCategoriesByRecipesPublicId(recipePublicId);
     }
 
-    RecipeCategoryEntity createRecipeCategory(RecipeCategoryAPI recipeCategoryAPI) {
-        RecipeCategoryEntity category = toRecipeCategoryEntity(recipeCategoryAPI);
+    RecipeCategoryEntity createRecipeCategory(CreateRecipeCategoryAPI createCategoryAPI) {
+        RecipeCategoryAPI categoryAPI = new RecipeCategoryAPI(createCategoryAPI.name(), null);
+        RecipeCategoryEntity category = toRecipeCategoryEntity(categoryAPI);
         return this.recipeCategoryRepository.save(category);
     }
 
@@ -54,11 +55,17 @@ public class RecipeCategoryService {
         return true;
     }
 
-    RecipeCategoryEntity toRecipeCategoryEntity(RecipeCategoryAPI categoryAPI) {
+    static RecipeCategoryEntity toRecipeCategoryEntity(RecipeCategoryAPI categoryAPI) {
         RecipeCategoryEntity.RecipeCategoryEntityBuilder categoryBuilder = RecipeCategoryEntity.builder();
         categoryBuilder.name(categoryAPI.name());
         return categoryBuilder.build();
+    }
 
+    public static RecipeCategoryAPI toRecipeCategoryAPI(RecipeCategoryEntity categoryEntity) {
+        RecipeCategoryAPI categoryAPI = new RecipeCategoryAPI(
+                categoryEntity.getName(),
+                categoryEntity.getPublicId());
+        return categoryAPI;
     }
 
 }

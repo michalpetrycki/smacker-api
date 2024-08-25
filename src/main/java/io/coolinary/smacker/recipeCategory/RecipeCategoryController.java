@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static io.coolinary.smacker.recipeCategory.RecipeCategoryService.toRecipeCategoryAPI;
 
 @RestController
 @RequestMapping("/api")
@@ -34,10 +35,9 @@ public class RecipeCategoryController {
     private final Logger logger = LoggerFactory.getLogger(RecipeCategoryController.class);
 
     @PostMapping(Routes.RECIPE_CATEGORIES)
-    public ResponseEntity<RecipeCategoryEntity> createRecipeCategory(@RequestBody RecipeCategoryAPI newCategory) {
+    public ResponseEntity<RecipeCategoryEntity> createRecipeCategory(@RequestBody CreateRecipeCategoryAPI newCategory) {
 
         try {
-            System.out.println("create done");
             return new ResponseEntity<RecipeCategoryEntity>(
                     this.recipeCategoryService.createRecipeCategory(newCategory),
                     HttpStatus.CREATED);
@@ -68,11 +68,12 @@ public class RecipeCategoryController {
     }
 
     @GetMapping(Routes.RECIPE_CATEGORIES)
-    public ResponseEntity<List<RecipeCategoryEntity>> getAllRecipeCategories() {
+    public ResponseEntity<List<RecipeCategoryAPI>> getAllRecipeCategories() {
 
         try {
-            return new ResponseEntity<List<RecipeCategoryEntity>>(
-                    this.recipeCategoryService.getAll().stream().collect(Collectors.toList()),
+            return new ResponseEntity<List<RecipeCategoryAPI>>(
+                    this.recipeCategoryService.getAll().stream().map(category -> toRecipeCategoryAPI(category))
+                            .collect(Collectors.toList()),
                     HttpStatus.OK);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);
