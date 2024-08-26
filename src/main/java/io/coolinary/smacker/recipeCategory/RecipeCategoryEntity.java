@@ -4,12 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.ColumnDefault;
 
 import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeNotFoundException;
-import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +33,6 @@ import lombok.Setter;
 @Getter
 @Table(name = "recipe_category")
 @Builder
-@DynamicInsert
 public class RecipeCategoryEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
@@ -43,6 +40,7 @@ public class RecipeCategoryEntity {
     private String name;
 
     @Column(name = "public_identifier", insertable = false)
+    @ColumnDefault("gen_random_uuid()")
     private UUID publicId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
