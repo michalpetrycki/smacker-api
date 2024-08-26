@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
 
 import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeNotFoundException;
@@ -40,7 +41,9 @@ public class RecipeCategoryEntity {
     private String name;
 
     @Column(name = "public_identifier", insertable = false)
+    @GeneratedValue(generator = "UUID")
     @ColumnDefault("gen_random_uuid()")
+    @GenericGenerator(name = "UUID")
     private UUID publicId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
