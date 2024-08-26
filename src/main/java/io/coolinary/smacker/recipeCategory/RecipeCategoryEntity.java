@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.GenerationTime;
 
 import io.coolinary.smacker.recipe.RecipeEntity;
@@ -34,13 +35,13 @@ import lombok.Setter;
 @Getter
 @Table(name = "recipe_category")
 @Builder
+@DynamicInsert
 public class RecipeCategoryEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "recipe_category_name")
     private String name;
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "public_identifier", insertable = false)
     private UUID publicId;
 
