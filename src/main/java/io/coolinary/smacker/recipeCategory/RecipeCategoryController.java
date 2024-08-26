@@ -36,7 +36,7 @@ public class RecipeCategoryController {
     private final Logger logger = LoggerFactory.getLogger(RecipeCategoryController.class);
 
     @PostMapping(Routes.RECIPE_CATEGORIES)
-    public ResponseEntity<RecipeCategoryEntity> createRecipeCategory(@RequestBody CreateRecipeCategoryAPI newCategory) {
+    public ResponseEntity<RecipeCategoryEntity> createCategory(@RequestBody CreateRecipeCategoryAPI newCategory) {
 
         try {
             return new ResponseEntity<RecipeCategoryEntity>(

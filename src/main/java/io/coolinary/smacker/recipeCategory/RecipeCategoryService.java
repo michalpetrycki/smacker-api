@@ -31,9 +31,8 @@ public class RecipeCategoryService {
     }
 
     RecipeCategoryEntity createRecipeCategory(CreateRecipeCategoryAPI createCategoryAPI) {
-        RecipeCategoryAPI categoryAPI = new RecipeCategoryAPI(createCategoryAPI.name(), null);
-        RecipeCategoryEntity category = toRecipeCategoryEntity(categoryAPI);
-        return this.recipeCategoryRepository.save(category);
+        RecipeCategoryEntity categoryEntity = RecipeCategoryEntity.builder().name(createCategoryAPI.name()).build();
+        return this.recipeCategoryRepository.save(categoryEntity);
     }
 
     public RecipeCategoryEntity updateRecipeCategory(RecipeCategoryEntity recipeCategory) {
