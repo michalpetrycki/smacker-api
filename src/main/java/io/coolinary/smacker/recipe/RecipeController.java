@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
-import io.coolinary.smacker.recipeCategory.RecipeCategoryEntity;
 import io.coolinary.smacker.recipeCategory.RecipeCategoryNotFoundException;
 import io.coolinary.smacker.recipeCategory.RecipeCategoryService;
 import io.coolinary.smacker.shared.Routes;

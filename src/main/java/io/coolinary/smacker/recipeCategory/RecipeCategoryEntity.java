@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
-
 import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeNotFoundException;
 import jakarta.persistence.CascadeType;
@@ -40,11 +37,9 @@ public class RecipeCategoryEntity {
     @Column(name = "recipe_category_name")
     private String name;
 
-    @Column(name = "public_identifier", insertable = false)
-    @GeneratedValue(generator = "UUID")
-    @ColumnDefault("gen_random_uuid()")
-    @GenericGenerator(name = "UUID")
-    private UUID publicId;
+    @Column(name = "public_identifier")
+    @Builder.Default()
+    private UUID publicId = UUID.randomUUID();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -53,10 +48,6 @@ public class RecipeCategoryEntity {
     @JoinTable(name = "recipe_to_category", joinColumns = { @JoinColumn(name = "category_id") }, inverseJoinColumns = {
             @JoinColumn(name = "recipe_id") })
     private Set<RecipeEntity> recipes = new HashSet<RecipeEntity>();
-
-    RecipeCategoryEntity(String name) {
-        this.name = name;
-    }
 
     public void addRecipe(RecipeEntity recipe) {
         this.recipes.add(recipe);
