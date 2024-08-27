@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
+@Transactional
 public class RecipeCategoryService {
 
     @Autowired
@@ -39,14 +43,8 @@ public class RecipeCategoryService {
         return this.recipeCategoryRepository.save(recipeCategory);
     }
 
-    Boolean deleteRecipeCategoryByPublicId(UUID publicId) {
-        try {
-            this.recipeCategoryRepository.deleteByPublicId(publicId);
-            return true;
-        } catch (IllegalArgumentException ex) {
-            return false;
-        }
-
+    Long deleteRecipeCategoryByPublicId(UUID publicId) {
+        return this.recipeCategoryRepository.deleteByPublicId(publicId);
     }
 
     Boolean deleteAllRecipeCategories() {

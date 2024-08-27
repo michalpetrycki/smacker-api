@@ -12,6 +12,6 @@ public interface RecipeCategoryRepository extends JpaRepository<RecipeCategoryEn
 
     Optional<RecipeCategoryEntity> findByPublicId(UUID publicId);
 
-    void deleteByPublicId(UUID publicId);
+    Long deleteByPublicId(UUID publicId);
 
 }

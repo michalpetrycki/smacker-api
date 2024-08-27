@@ -112,9 +112,9 @@ public class RecipeCategoryController {
     }
 
     @DeleteMapping(Routes.RECIPE_CATEGORIES + Routes.PID)
-    public ResponseEntity<Boolean> deleteCategory(@PathVariable("publicId") UUID publicId) {
-        return new ResponseEntity<Boolean>(this.recipeCategoryService.deleteRecipeCategoryByPublicId(publicId),
-                HttpStatus.NO_CONTENT);
+    public ResponseEntity<Long> deleteCategory(@PathVariable("publicId") UUID publicId) {
+        return new ResponseEntity<Long>(this.recipeCategoryService.deleteRecipeCategoryByPublicId(publicId),
+                HttpStatus.OK);
     }
 
     @DeleteMapping(Routes.RECIPE_CATEGORIES + Routes.ALL)
