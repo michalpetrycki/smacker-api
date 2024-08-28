@@ -20,7 +20,7 @@ class RecipeCategoryNotFoundAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     ResponseEntity<?> recipeCategoryNotFoundHandler(RecipeCategoryNotFoundException ex) {
         this.logger.error(ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
 }
