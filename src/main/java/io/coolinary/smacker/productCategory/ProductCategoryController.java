@@ -6,10 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import io.coolinary.smacker.product.ProductAPI;
-// import io.coolinary.smacker.product.ProductService;
-// import io.coolinary.smacker.recipe.Recipe;
-// import io.coolinary.smacker.recipeCategory.RecipeCategory;
-// import io.coolinary.smacker.recipeCategory.RecipeCategoryNotFoundException;
 import io.coolinary.smacker.shared.Routes;
 
 import org.springframework.beans.factory.annotation.Autowired;
