@@ -8,8 +8,9 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import io.coolinary.smacker.recipe.RecipeEntity;
-import io.coolinary.smacker.recipe.RecipeNotFoundException;
 import io.coolinary.smacker.recipe.RecipeService;
+import io.coolinary.smacker.shared.ElementNotFoundException;
+import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
 import io.coolinary.smacker.shared.Routes;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,7 @@ public class RecipeCategoryController {
     public ResponseEntity<List<RecipeCategoryEntity>> getAllCategoriesByRecipeId(
             @PathVariable("publicId") UUID recipePublicId) {
         if (!this.recipeService.existsByPublicId(recipePublicId)) {
-            throw new RecipeNotFoundException(recipePublicId);
+            throw new ElementNotFoundException(recipePublicId, EntityType.RECIPE);
         }
         return new ResponseEntity<List<RecipeCategoryEntity>>(
                 this.recipeCategoryService.getCategoriesByRecipePublicId(recipePublicId),

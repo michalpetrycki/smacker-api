@@ -14,14 +14,14 @@ public class ProductCategoryService {
         return this.productCategoryRepository.findAll();
     }
 
-    public boolean existsById(Long id) {
-        return this.productCategoryRepository.findById(id)
-                .orElseThrow(() -> new ProductCategoryNotFoundException(id)) != null;
-    }
+    // public boolean existsById(Long id) {
+    //     return this.productCategoryRepository.findById(id)
+    //             .orElseThrow(() -> new ProductCategoryNotFoundException(id)) != null;
+    // }
 
-    ProductCategory getById(Long id) {
-        return this.productCategoryRepository.findById(id).orElseThrow(() -> new ProductCategoryNotFoundException(id));
-    }
+    // ProductCategory getById(Long id) {
+    //     return this.productCategoryRepository.findById(id).orElseThrow(() -> new ProductCategoryNotFoundException(id));
+    // }
 
     public List<ProductCategory> getCategoriesByProductId(Long productId) {
         return this.productCategoryRepository.findCategoriesByProductsId(productId);

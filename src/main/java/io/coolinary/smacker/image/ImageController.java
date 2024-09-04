@@ -26,21 +26,21 @@ public class ImageController {
     }
 
     @GetMapping(Routes.IMAGES)
-    ResponseEntity<List<Image>> getAll() {
-        List<Image> images = this.imageService.getAll();
-        return new ResponseEntity<List<Image>>(images.stream().collect(Collectors.toList()), HttpStatus.OK);
+    ResponseEntity<List<ImageEntity>> getAll() {
+        List<ImageEntity> images = this.imageService.getAll();
+        return new ResponseEntity<List<ImageEntity>>(images.stream().collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @GetMapping(Routes.IMAGES + Routes.ID)
-    public ResponseEntity<Image> getImage(@PathVariable("id") Long id) {
-        return new ResponseEntity<Image>(this.imageService.getById(id), HttpStatus.OK);
+    public ResponseEntity<ImageEntity> getImage(@PathVariable("id") Long id) {
+        return new ResponseEntity<ImageEntity>(this.imageService.getById(id), HttpStatus.OK);
     }
 
     @PostMapping(Routes.IMAGES)
-    public ResponseEntity<Image> newImage(@RequestBody Image newImage) {
+    public ResponseEntity<ImageEntity> newImage(@RequestBody ImageEntity newImage) {
 
         try {
-            return new ResponseEntity<Image>(this.imageService.createImage(newImage), HttpStatus.CREATED);
+            return new ResponseEntity<ImageEntity>(this.imageService.createImage(newImage), HttpStatus.CREATED);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -49,15 +49,15 @@ public class ImageController {
     }
 
     @PutMapping(Routes.IMAGES + Routes.ID)
-    public ResponseEntity<Image> replaceImage(@RequestBody Image newImage, @PathVariable("id") Long id) {
+    public ResponseEntity<ImageEntity> replaceImage(@RequestBody ImageEntity newImage, @PathVariable("id") Long id) {
 
-        Image imageToUpdate = this.imageService.getById(id);
+        ImageEntity imageToUpdate = this.imageService.getById(id);
         if (imageToUpdate == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ImageEntity>(HttpStatus.NOT_FOUND);
         }
 
         imageToUpdate.setImageName(newImage.getImageName());
-        return new ResponseEntity<Image>(this.imageService.updateImage(id, imageToUpdate), HttpStatus.OK);
+        return new ResponseEntity<ImageEntity>(this.imageService.updateImage(id, imageToUpdate), HttpStatus.OK);
     }
 
     @DeleteMapping(Routes.IMAGES + Routes.ID)

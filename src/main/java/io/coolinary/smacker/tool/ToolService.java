@@ -15,9 +15,9 @@ public class ToolService {
         return this.toolRepository.findAll();
     }
 
-    ToolEntity getById(Long id) {
-        return this.toolRepository.findById(id).orElseThrow(() -> new ToolNotFoundException(id));
-    }
+    // ToolEntity getById(Long id) {
+    //     return this.toolRepository.findById(id).orElseThrow(() -> new ToolNotFoundException(id));
+    // }
 
     ToolEntity createTool(ToolCreateAPI toolCreateAPI) {
         ToolEntity toolEntity = toToolEntity(toolCreateAPI);

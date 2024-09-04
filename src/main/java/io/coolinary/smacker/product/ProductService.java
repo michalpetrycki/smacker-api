@@ -7,6 +7,9 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.coolinary.smacker.shared.ElementNotFoundException;
+import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
+
 @Service
 public class ProductService {
 
@@ -17,20 +20,27 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public boolean existsById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id)) != null;
+    public boolean existsByPublicId(UUID publicId) {
+        return productRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.PRODUCT)) != null;
     }
 
-    public ProductEntity getById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+    public ProductEntity getByPublicId(UUID publicId) {
+        return productRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.PRODUCT));
     }
+
+    // public ProductEntity getById(Long id) {
+    // return productRepository.findById(id).orElseThrow(() -> new
+    // ElementNotFoundException(id, "product"));
+    // }
 
     public List<ProductEntity> getProductsByCategoriesId(Long categoryId) {
         return productRepository.findProductsByCategoriesId(categoryId);
     }
 
     public ProductEntity createProduct(ProductCreateAPI productCreateAPI) {
-        ProductEntity.ProductEntityBuilder productBuilder = ProductEntity.builder();
+        ProductEntity.ProductEntityBuilder<?, ?> productBuilder = ProductEntity.builder();
 
         productBuilder.publicId(UUID.randomUUID());
         productBuilder.name(productCreateAPI.name());
@@ -43,11 +53,11 @@ public class ProductService {
         return productRepository.save(productBuilder.build());
     }
 
-    ProductEntity updateProduct(Long id, ProductAPI productAPI) {
+    ProductEntity updateProduct(UUID publicId, ProductAPI productAPI) {
 
-        ProductEntity productEntity = getById(id);
+        ProductEntity productEntity = getByPublicId(publicId);
         if (productEntity == null) {
-            throw new ProductNotFoundException(id);
+            throw new ElementNotFoundException(publicId, EntityType.PRODUCT);
         }
 
         productEntity.setName(productAPI.name());
@@ -60,10 +70,9 @@ public class ProductService {
         return productRepository.save(productEntity);
     }
 
-    Boolean deleteProduct(Long id) {
+    Boolean deleteProduct(UUID publicId) {
         try {
-            ProductEntity productEntity = getById(id);
-            productRepository.deleteById(productEntity.getId());
+            productRepository.deleteByPublicId(publicId);
             return true;
         } catch (IllegalArgumentException ex) {
             return false;

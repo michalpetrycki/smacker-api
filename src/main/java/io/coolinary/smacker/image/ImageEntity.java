@@ -4,20 +4,25 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.UUID;
 
+import io.coolinary.smacker.shared.UpdatableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@NoArgsConstructor
+@SuperBuilder
 @Getter
 @Setter
-public class Image {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ImageEntity extends UpdatableEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "image_name")
@@ -30,25 +35,6 @@ public class Image {
     private byte[] data;
     @Column(name = "public_identifier")
     private UUID publicId;
-
-    Image(String imageName, String url, Instant creationTimestamp) {
-        this.imageName = imageName;
-        this.url = url;
-        this.creationTimestamp = creationTimestamp;
-    }
-
-    Image(String imageName, Instant creationTimestamp, byte[] data) {
-        this.imageName = imageName;
-        this.creationTimestamp = creationTimestamp;
-        this.data = data;
-    }
-
-    Image(String imageName, String url, Instant creationTimestamp, byte[] data) {
-        this.imageName = imageName;
-        this.url = url;
-        this.creationTimestamp = creationTimestamp;
-        this.data = data;
-    }
 
     @Override
     public int hashCode() {
@@ -70,7 +56,7 @@ public class Image {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Image other = (Image) obj;
+        ImageEntity other = (ImageEntity) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

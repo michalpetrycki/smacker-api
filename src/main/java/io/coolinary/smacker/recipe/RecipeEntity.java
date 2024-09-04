@@ -1,7 +1,6 @@
 package io.coolinary.smacker.recipe;
 
 import java.util.Set;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -12,34 +11,39 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import io.coolinary.smacker.recipeCategory.RecipeCategoryEntity;
+import io.coolinary.smacker.shared.UpdatableEntity;
 
 @Entity
-@NoArgsConstructor
+@SuperBuilder
 @Getter
 @Setter
 @Table(name = "Recipe")
-public class RecipeEntity {
+@AllArgsConstructor
+@NoArgsConstructor
+public class RecipeEntity extends UpdatableEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "recipe_name")
     private String name;
     @Column(name = "description")
     private String description;
-    @Column(name = "public_identifier")
-    private UUID publicId;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
     }, mappedBy = "recipes")
     @JsonIgnore
+    @Builder.Default
     private Set<RecipeCategoryEntity> categories = new HashSet<>();
 
     @Override

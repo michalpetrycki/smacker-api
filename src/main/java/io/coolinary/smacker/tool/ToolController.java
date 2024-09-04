@@ -37,10 +37,10 @@ public class ToolController {
                 tools.stream().map(tool -> toToolAPI(tool)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @GetMapping(Routes.TOOLS + Routes.ID)
-    public ResponseEntity<ToolAPI> getTool(@PathVariable("id") Long id) {
-        return new ResponseEntity<ToolAPI>(toToolAPI(this.toolService.getById(id)), HttpStatus.OK);
-    }
+    // @GetMapping(Routes.TOOLS + Routes.ID)
+    // public ResponseEntity<ToolAPI> getTool(@PathVariable("id") Long id) {
+    //     return new ResponseEntity<ToolAPI>(toToolAPI(this.toolService.getById(id)), HttpStatus.OK);
+    // }
 
     @PostMapping(Routes.TOOLS)
     public ResponseEntity<ToolAPI> createTool(@RequestBody ToolCreateAPI newTool) {
@@ -54,17 +54,17 @@ public class ToolController {
 
     }
 
-    @PutMapping(Routes.TOOLS + Routes.ID)
-    public ResponseEntity<ToolEntity> replaceTool(@RequestBody ToolEntity newTool, @PathVariable("id") Long id) {
+    // @PutMapping(Routes.TOOLS + Routes.ID)
+    // public ResponseEntity<ToolEntity> replaceTool(@RequestBody ToolEntity newTool, @PathVariable("id") Long id) {
 
-        ToolEntity toolToUpdate = this.toolService.getById(id);
-        if (toolToUpdate == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    //     ToolEntity toolToUpdate = this.toolService.getById(id);
+    //     if (toolToUpdate == null) {
+    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    //     }
 
-        toolToUpdate.setToolName(newTool.getToolName());
-        return new ResponseEntity<ToolEntity>(this.toolService.updateTool(id, toolToUpdate), HttpStatus.OK);
-    }
+    //     toolToUpdate.setToolName(newTool.getToolName());
+    //     return new ResponseEntity<ToolEntity>(this.toolService.updateTool(id, toolToUpdate), HttpStatus.OK);
+    // }
 
     @DeleteMapping(Routes.TOOLS + Routes.ID)
     public ResponseEntity<Boolean> deleteTool(@PathVariable("id") Long id) {

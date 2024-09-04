@@ -18,26 +18,31 @@ public class ImageService {
     @Autowired
     ImageRepository imageRepository;
 
-    List<Image> getAll() {
+    List<ImageEntity> getAll() {
         return this.imageRepository.findAll();
     }
 
-    Image getById(Long id) {
-        final Optional<Image> retrievedImage = this.imageRepository.findById(id);
+    ImageEntity getById(Long id) {
+        final Optional<ImageEntity> retrievedImage = this.imageRepository.findById(id);
 
-        if (retrievedImage != null) {
-            return new Image(retrievedImage.get().getImageName(), Instant.now(),
-                    ImageService.decompressBytes(retrievedImage.get().getData()));
-        } else
-            throw new ImageNotFoundException(id);
+        ImageEntity.ImageEntityBuilder img = ImageEntity.builder();
+
+        retrievedImage.ifPresent(image -> {
+            img.imageName(image.getImageName());
+            img.data(ImageService.compressBytes(image.getData()));
+        });
+
+        return img.build();
+
     }
 
-    Image createImage(Image image) {
-        Image img = new Image(image.getImageName(), Instant.now(), ImageService.compressBytes(image.getData()));
+    ImageEntity createImage(ImageEntity image) {
+        ImageEntity img = ImageEntity.builder().imageName(image.getImageName())
+                .data(ImageService.compressBytes(image.getData())).build();
         return this.imageRepository.save(img);
     }
 
-    Image updateImage(Long id, Image image) {
+    ImageEntity updateImage(Long id, ImageEntity image) {
         return this.imageRepository.save(image);
     }
 

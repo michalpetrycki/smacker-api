@@ -7,31 +7,29 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
 import java.util.UUID;
 
+import io.coolinary.smacker.shared.UpdatableEntity;
+
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @Table(name = "tool")
-public class ToolEntity {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ToolEntity extends UpdatableEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "public_identifier")
     private UUID publicId;
     @Column(name = "tool_name")
     private String toolName;
-
-    public ToolEntity(String toolName) {
-        this.publicId = UUID.randomUUID();
-        this.toolName = toolName;
-    }
 
     @Override
     public int hashCode() {

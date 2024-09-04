@@ -1,9 +1,11 @@
 package io.coolinary.smacker.product;
 
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
+
 import io.coolinary.smacker.shared.Routes;
 
 import org.springframework.http.HttpStatus;
@@ -40,10 +42,12 @@ public class ProductController {
                 products.stream().map(product -> toProductAPI(product)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    @GetMapping(Routes.PRODUCTS + Routes.ID)
-    public ResponseEntity<ProductAPI> getProduct(@PathVariable("id") Long id) {
-        return new ResponseEntity<ProductAPI>(toProductAPI(productService.getById(id)), HttpStatus.OK);
-    }
+    // @GetMapping(Routes.PRODUCTS + Routes.ID)
+    // public ResponseEntity<ProductAPI> getProduct(@PathVariable("id") Long id) {
+    // return new
+    // ResponseEntity<ProductAPI>(toProductAPI(productService.getById(id)),
+    // HttpStatus.OK);
+    // }
 
     @PostMapping(Routes.PRODUCTS)
     public ResponseEntity<ProductAPI> createProduct(@RequestBody ProductCreateAPI newProduct) {
@@ -58,26 +62,31 @@ public class ProductController {
 
     }
 
-    @GetMapping(Routes.PRODUCTS + Routes.ID + Routes.PRODUCT_CATEGORIES)
-    public ResponseEntity<List<ProductCategory>> getAllCategoriesByProductId(@PathVariable("id") Long productId) {
-        if (!productService.existsById(productId)) {
-            throw new ProductNotFoundException(productId);
-        }
-        return new ResponseEntity<List<ProductCategory>>(
-                productCategoryService.getCategoriesByProductId(productId),
-                HttpStatus.CREATED);
-    }
+    // @GetMapping(Routes.PRODUCTS + Routes.ID + Routes.PRODUCT_CATEGORIES)
+    // public ResponseEntity<List<ProductCategory>>
+    // getAllCategoriesByProductId(@PathVariable("publicId") UUID publicId) {
+    // if (!productService.existsById(productId)) {
+    // throw new ElementNotFoundException(productId, "product");
+    // }
+    // return new ResponseEntity<List<ProductCategory>>(
+    // productCategoryService.getCategoriesByProductId(productId),
+    // HttpStatus.CREATED);
+    // }
 
-    @PutMapping(Routes.PRODUCTS + Routes.ID)
-    public ResponseEntity<ProductAPI> updateProduct(@PathVariable("id") Long id, @RequestBody ProductAPI productAPI) {
-        return new ResponseEntity<ProductAPI>(toProductAPI(productService.updateProduct(id, productAPI)),
-                HttpStatus.OK);
-    }
+    // @PutMapping(Routes.PRODUCTS + Routes.ID)
+    // public ResponseEntity<ProductAPI> updateProduct(@PathVariable("id") Long id,
+    // @RequestBody ProductAPI productAPI) {
+    // return new
+    // ResponseEntity<ProductAPI>(toProductAPI(productService.updateProduct(id,
+    // productAPI)),
+    // HttpStatus.OK);
+    // }
 
-    @DeleteMapping(Routes.PRODUCTS + Routes.ID)
-    public ResponseEntity<Boolean> deleteProduct(@PathVariable("id") Long id) {
-        return new ResponseEntity<Boolean>(productService.deleteProduct(id), HttpStatus.NO_CONTENT);
-    }
+    // @DeleteMapping(Routes.PRODUCTS + Routes.ID)
+    // public ResponseEntity<Boolean> deleteProduct(@PathVariable("id") Long id) {
+    // return new ResponseEntity<Boolean>(productService.deleteProduct(id),
+    // HttpStatus.NO_CONTENT);
+    // }
 
     @DeleteMapping(Routes.PRODUCTS + Routes.ALL)
     public ResponseEntity<Boolean> deleteAllProducts() {

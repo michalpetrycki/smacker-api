@@ -1,29 +1,23 @@
 package io.coolinary.smacker.product;
 
 import java.util.Set;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.coolinary.smacker.productCategory.ProductCategory;
 import io.coolinary.smacker.shared.UpdatableEntity;
-
 import java.util.HashSet;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Getter
 @Setter
 @Entity
 @Table(name = "product")
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductEntity extends UpdatableEntity {
-
-    @Builder.Default
-    @Column(name = "public_identifier")
-    private UUID publicId = UUID.randomUUID();
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "product_name")
@@ -44,15 +38,8 @@ public class ProductEntity extends UpdatableEntity {
             CascadeType.MERGE
     }, mappedBy = "products")
     @JsonIgnore
+    @Builder.Default
     private Set<ProductCategory> categories = new HashSet<>();
-
-    public Set<ProductCategory> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<ProductCategory> categories) {
-        this.categories = categories;
-    }
 
     @Override
     public int hashCode() {

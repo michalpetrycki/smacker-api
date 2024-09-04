@@ -210,39 +210,64 @@
     <changeSet id="1.19" author="mpetrycki">
         <addColumn tableName="tool">
             <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
-                <constraints nullable="false"/>
+                <constraints nullable="false" />
             </column>
         </addColumn>
     </changeSet>
 
     <changeSet id="1.20" author="mpetrycki">
-        <renameColumn tableName="product" oldColumnName="create_timestamp" newColumnName="creation_timestamp" />
+        <renameColumn tableName="product" oldColumnName="create_timestamp"
+            newColumnName="creation_timestamp" />
     </changeSet>
 
     <changeSet id="1.21" author="mpetrycki">
         <addColumn tableName="recipe">
             <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
-                <constraints nullable="false"/>
+                <constraints nullable="false" />
             </column>
         </addColumn>
 
         <addColumn tableName="recipe_category">
             <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
-                <constraints nullable="false"/>
+                <constraints nullable="false" />
             </column>
         </addColumn>
 
         <addColumn tableName="product_category">
             <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
-                <constraints nullable="false"/>
+                <constraints nullable="false" />
             </column>
         </addColumn>
 
         <addColumn tableName="image">
             <column name="public_identifier" type="uuid" defaultValueComputed="gen_random_uuid()">
-                <constraints nullable="false"/>
+                <constraints nullable="false" />
             </column>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="1.22" author="mpetrycki">
+        <addColumn tableName="recipe_category">
+            <column name="creation_timestamp" type="timestamp"
+                defaultValueComputed="CURRENT_TIMESTAMP"></column>
+            <column name="update_timestamp" type="datetime" />
+        </addColumn>
+        <addColumn tableName="product_category">
+            <column name="creation_timestamp" type="timestamp"
+                defaultValueComputed="CURRENT_TIMESTAMP"></column>
+            <column name="update_timestamp" type="datetime" />
+        </addColumn>
+        <addColumn tableName="recipe">
+            <column name="creation_timestamp" type="timestamp"
+                defaultValueComputed="CURRENT_TIMESTAMP"></column>
+            <column name="update_timestamp" type="datetime" />
+        </addColumn>
+        <addColumn tableName="tool">
+            <column name="creation_timestamp" type="timestamp"
+                defaultValueComputed="CURRENT_TIMESTAMP"></column>
+            <column name="update_timestamp" type="datetime" />
+        </addColumn>
+
     </changeSet>
 
     <!-- 

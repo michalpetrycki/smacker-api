@@ -86,10 +86,13 @@ public class ProductCategoryController {
         }
     }
 
-    @GetMapping(Routes.PRODUCT_CATEGORIES + Routes.ID)
-    public ResponseEntity<ProductCategory> getCategory(@PathVariable("id") Long id) {
-        return new ResponseEntity<ProductCategory>(this.productCategoryService.getById(id), HttpStatus.OK);
-    }
+    // @GetMapping(Routes.PRODUCT_CATEGORIES + Routes.ID)
+    // public ResponseEntity<ProductCategory> getCategory(@PathVariable("id") Long
+    // id) {
+    // return new
+    // ResponseEntity<ProductCategory>(this.productCategoryService.getById(id),
+    // HttpStatus.OK);
+    // }
 
     @GetMapping(Routes.PRODUCT_CATEGORIES + Routes.ID + Routes.PRODUCTS)
     public ResponseEntity<List<ProductAPI>> getAllProductsByCategoryId(@PathVariable("id") Long categoryId) {
@@ -102,17 +105,18 @@ public class ProductCategoryController {
         return new ResponseEntity<>(null);
     }
 
-    @PutMapping(Routes.PRODUCT_CATEGORIES + Routes.ID)
-    public ResponseEntity<ProductCategory> replaceCategory(@PathVariable("id") Long id,
-            @RequestBody ProductCategory newCategory) {
+    // @PutMapping(Routes.PRODUCT_CATEGORIES + Routes.ID)
+    // public ResponseEntity<ProductCategory> replaceCategory(@PathVariable("id")
+    // Long id,
+    // @RequestBody ProductCategory newCategory) {
 
-        ProductCategory _category = this.productCategoryService.getById(id);
-        _category.setName(newCategory.getName());
-        return new ResponseEntity<ProductCategory>(
-                this.productCategoryService.updateProductCategory(id, _category),
-                HttpStatus.OK);
+    // ProductCategory _category = this.productCategoryService.getById(id);
+    // _category.setName(newCategory.getName());
+    // return new ResponseEntity<ProductCategory>(
+    // this.productCategoryService.updateProductCategory(id, _category),
+    // HttpStatus.OK);
 
-    }
+    // }
 
     @DeleteMapping(Routes.PRODUCT_CATEGORIES + Routes.ID)
     public ResponseEntity<Boolean> deleteCategory(@PathVariable("id") Long id) {
@@ -126,13 +130,15 @@ public class ProductCategoryController {
                 HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping(Routes.PRODUCT_CATEGORIES + Routes.ID + Routes.PRODUCTS + Routes.PRODUCT_ID)
-    public ResponseEntity<HttpStatus> deleteProductFromCategory(@PathVariable("id") Long id,
-            @PathVariable("productId") Long productId) {
-        ProductCategory category = productCategoryService.getById(id);
-        category.removeProduct(productId);
-        productCategoryService.updateProductCategory(id, category);
-        return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
-    }
+    // @DeleteMapping(Routes.PRODUCT_CATEGORIES + Routes.ID + Routes.PRODUCTS +
+    // Routes.PRODUCT_ID)
+    // public ResponseEntity<HttpStatus>
+    // deleteProductFromCategory(@PathVariable("id") Long id,
+    // @PathVariable("productId") Long productId) {
+    // ProductCategory category = productCategoryService.getById(id);
+    // category.removeProduct(productId);
+    // productCategoryService.updateProductCategory(id, category);
+    // return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+    // }
 
 }

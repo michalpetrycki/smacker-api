@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import io.coolinary.smacker.product.ProductEntity;
+import io.coolinary.smacker.shared.UpdatableEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,15 +16,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@NoArgsConstructor
+@SuperBuilder
 @Getter
 @Setter
-public class ProductCategory {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ProductCategory extends UpdatableEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "product_category_name")
@@ -39,10 +44,6 @@ public class ProductCategory {
     @JoinTable(name = "product_to_category", joinColumns = { @JoinColumn(name = "category_id") }, inverseJoinColumns = {
             @JoinColumn(name = "product_id") })
     private Set<ProductEntity> products = new HashSet<ProductEntity>();
-
-    ProductCategory(String name) {
-        this.name = name;
-    }
 
     public void addProduct(ProductEntity product) {
         this.products.add(product);

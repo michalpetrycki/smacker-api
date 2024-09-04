@@ -5,7 +5,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import io.coolinary.smacker.recipe.RecipeEntity;
-import io.coolinary.smacker.recipe.RecipeNotFoundException;
+import io.coolinary.smacker.shared.ElementNotFoundException;
+import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
+import io.coolinary.smacker.shared.UpdatableEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,29 +19,25 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@Setter(value = AccessLevel.PACKAGE)
+@Setter
 @Getter
 @Table(name = "recipe_category")
-@Builder
-public class RecipeCategoryEntity {
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+public class RecipeCategoryEntity extends UpdatableEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "recipe_category_name")
     private String name;
-
-    @Column(name = "public_identifier")
-    @Builder.Default()
-    private UUID publicId = UUID.randomUUID();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -47,6 +45,7 @@ public class RecipeCategoryEntity {
     })
     @JoinTable(name = "recipe_to_category", joinColumns = { @JoinColumn(name = "category_id") }, inverseJoinColumns = {
             @JoinColumn(name = "recipe_id") })
+    @Builder.Default
     private Set<RecipeEntity> recipes = new HashSet<RecipeEntity>();
 
     public void addRecipe(RecipeEntity recipe) {
@@ -56,7 +55,7 @@ public class RecipeCategoryEntity {
 
     public void removeRecipe(UUID recipePublicId) {
         RecipeEntity recipe = this.recipes.stream().filter(r -> r.getPublicId() == recipePublicId).findFirst()
-                .orElseThrow(() -> new RecipeNotFoundException(recipePublicId));
+                .orElseThrow(() -> new ElementNotFoundException(recipePublicId, EntityType.RECIPE));
         if (recipe != null) {
             this.recipes.remove(recipe);
             recipe.getCategories().remove(this);
