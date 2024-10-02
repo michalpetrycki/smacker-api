@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.coolinary.smacker.recipeCategory.RecipeCategoryEntity;
 import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
 
@@ -33,8 +34,9 @@ public class RecipeService {
         return this.recipeRepository.findRecipesByCategoriesPublicId(categoryId);
     }
 
-    public RecipeEntity createRecipe(RecipeEntity recipe) {
-        return this.recipeRepository.save(recipe);
+    public RecipeEntity createRecipe(CreateRecipeAPI createRecipeAPI) {
+        RecipeEntity recipeEntity = RecipeEntity.builder().name(createRecipeAPI.name()).build();
+        return this.recipeRepository.save(recipeEntity);
     }
 
     RecipeEntity updateRecipe(RecipeEntity recipe) {

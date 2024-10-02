@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
+import io.coolinary.smacker.recipe.CreateRecipeAPI;
 import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeService;
 import io.coolinary.smacker.shared.ElementNotFoundException;
@@ -52,11 +53,11 @@ public class RecipeCategoryController {
 
     @PostMapping(Routes.RECIPE_CATEGORIES + Routes.PID + Routes.RECIPES)
     public ResponseEntity<RecipeEntity> createRecipe(@PathVariable("publicId") UUID recipeCategoryPublicId,
-            @RequestBody RecipeEntity recipeRequest) {
+            @RequestBody CreateRecipeAPI createRecipeAPI) {
 
         try {
             RecipeCategoryEntity category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
-            RecipeEntity recipe = recipeService.createRecipe(recipeRequest);
+            RecipeEntity recipe = recipeService.createRecipe(createRecipeAPI);
             category.addRecipe(recipe);
             recipeCategoryService.updateRecipeCategory(category);
 

@@ -36,10 +36,10 @@ public class RecipeController {
     private Logger logger = LoggerFactory.getLogger(RecipeController.class);
 
     @PostMapping(Routes.RECIPES)
-    public ResponseEntity<RecipeEntity> createRecipe(@RequestBody RecipeEntity newRecipe) {
+    public ResponseEntity<RecipeEntity> createRecipe(@RequestBody CreateRecipeAPI newRecipeAPI) {
 
         try {
-            return new ResponseEntity<RecipeEntity>(this.recipeService.createRecipe(newRecipe),
+            return new ResponseEntity<RecipeEntity>(this.recipeService.createRecipe(newRecipeAPI),
                     HttpStatus.CREATED);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);
