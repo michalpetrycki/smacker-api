@@ -35,8 +35,12 @@ public class RecipeService {
     }
 
     public RecipeEntity createRecipe(CreateRecipeAPI createRecipeAPI) {
-        RecipeEntity recipeEntity = RecipeEntity.builder().name(createRecipeAPI.name()).build();
-        return this.recipeRepository.save(recipeEntity);
+        RecipeEntity.RecipeEntityBuilder<?, ?> recipeEntity = RecipeEntity.builder()
+        .name(createRecipeAPI.name());
+        
+        createRecipeAPI.description().ifPresent(recipeEntity::description);
+
+        return this.recipeRepository.save(recipeEntity.build());
     }
 
     RecipeEntity updateRecipe(RecipeEntity recipe) {

@@ -9,6 +9,7 @@ public record CreateRecipeAPI(
         String name,
         Optional<String> description,
         ArrayList<ProductAPI> products,
+        ArrayList<Integer> amounts,
         ArrayList<ToolAPI> tools,
         ArrayList<String> steps) {
 
