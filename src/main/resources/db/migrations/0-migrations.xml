@@ -267,7 +267,14 @@
                 defaultValueComputed="CURRENT_TIMESTAMP"></column>
             <column name="update_timestamp" type="datetime" />
         </addColumn>
+    </changeSet>
 
+    <changeSet id="1.23" author="mpetrycki">
+        <addColumn tableName="product_to_recipe">
+            <column name="amount" type="smallint">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
     </changeSet>
 
     <!-- 

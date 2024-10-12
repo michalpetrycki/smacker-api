@@ -2,11 +2,13 @@ package io.coolinary.smacker.recipe;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.coolinary.smacker.recipeCategory.RecipeCategoryEntity;
+import io.coolinary.smacker.product.ProductAPI;
+import io.coolinary.smacker.product.ProductService;
 import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
 
@@ -36,10 +38,8 @@ public class RecipeService {
 
     public RecipeEntity createRecipe(CreateRecipeAPI createRecipeAPI) {
         RecipeEntity.RecipeEntityBuilder<?, ?> recipeEntity = RecipeEntity.builder()
-        .name(createRecipeAPI.name());
-        
+                .name(createRecipeAPI.name());
         createRecipeAPI.description().ifPresent(recipeEntity::description);
-
         return this.recipeRepository.save(recipeEntity.build());
     }
 
@@ -59,6 +59,30 @@ public class RecipeService {
     Boolean deleteAllRecipes() {
         this.recipeRepository.deleteAll();
         return true;
+    }
+
+    static RecipeEntity toRecipeEntity(RecipeAPI recipeAPI) {
+        RecipeEntity.RecipeEntityBuilder<?, ?> recipeBuilder = RecipeEntity.builder();
+        recipeBuilder.name(recipeAPI.name());
+        recipeBuilder.description(recipeAPI.description());
+        return recipeBuilder.build();
+    }
+
+    public static RecipeAPI toRecipeAPI(RecipeEntity recipeEntity) {
+
+        List<ProductAPI> products = recipeEntity.getProducts().stream().map(recipeProduct -> recipeProduct.getProduct())
+                .toList().stream().map(ProductService::toProductAPI).collect(Collectors.toList());
+
+        RecipeAPI recipeAPI = new RecipeAPI(
+                recipeEntity.getName(),
+                recipeEntity.getDescription(),
+                List.of("Step1", "Step2", "Step3"),
+                recipeEntity.getPublicId(),
+                recipeEntity.getCreationTimestamp(),
+                recipeEntity.getUpdateTimestamp(),
+                products,
+                List.of(1, 2, 3));
+        return recipeAPI;
     }
 
 }

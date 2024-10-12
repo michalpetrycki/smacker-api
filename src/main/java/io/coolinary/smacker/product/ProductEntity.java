@@ -3,9 +3,17 @@ package io.coolinary.smacker.product;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.coolinary.smacker.productCategory.ProductCategory;
+import io.coolinary.smacker.shared.RecipeProduct;
 import io.coolinary.smacker.shared.UpdatableEntity;
+
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -19,7 +27,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class ProductEntity extends UpdatableEntity {
 
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(name = "product_name")
     private String name;
     @Column(name = "description")
@@ -33,6 +43,11 @@ public class ProductEntity extends UpdatableEntity {
     @Column
     private int proteins;
 
+    @OneToMany(mappedBy = "product")
+    @JsonIgnore
+    @Builder.Default
+    private List<RecipeProduct> recipes = new ArrayList<>();
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE
@@ -43,51 +58,17 @@ public class ProductEntity extends UpdatableEntity {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + carbs;
-        result = prime * result + fats;
-        result = prime * result + fiber;
-        result = prime * result + proteins;
-        return result;
+        return Objects.hash(name);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        if (obj == null)
+        if (o == null || getClass() != o.getClass())
             return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ProductEntity other = (ProductEntity) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (description == null) {
-            if (other.description != null)
-                return false;
-        } else if (!description.equals(other.description))
-            return false;
-        if (carbs != other.carbs)
-            return false;
-        if (fats != other.fats)
-            return false;
-        if (fiber != other.fiber)
-            return false;
-        if (proteins != other.proteins)
-            return false;
-        return true;
+        ProductEntity product = (ProductEntity) o;
+        return Objects.equals(name, product.name);
     }
 
     @Override

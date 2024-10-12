@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
+import io.coolinary.smacker.product.ProductEntity;
+import io.coolinary.smacker.product.ProductRepository;
 import io.coolinary.smacker.recipe.CreateRecipeAPI;
+import io.coolinary.smacker.recipe.RecipeAPI;
 import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeService;
 import io.coolinary.smacker.shared.ElementNotFoundException;
@@ -25,7 +28,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import static io.coolinary.smacker.recipeCategory.RecipeCategoryService.toRecipeCategoryAPI;
+import static io.coolinary.smacker.recipe.RecipeService.toRecipeAPI;
 
 @RestController
 @RequestMapping("/api")
@@ -35,6 +40,8 @@ public class RecipeCategoryController {
     private RecipeService recipeService;
     @Autowired
     private RecipeCategoryService recipeCategoryService;
+    @Autowired
+    private ProductRepository productRepository;
     private final Logger logger = LoggerFactory.getLogger(RecipeCategoryController.class);
 
     @PostMapping(Routes.RECIPE_CATEGORIES)
@@ -52,16 +59,23 @@ public class RecipeCategoryController {
     }
 
     @PostMapping(Routes.RECIPE_CATEGORIES + Routes.PID + Routes.RECIPES)
-    public ResponseEntity<RecipeEntity> createRecipe(@PathVariable("publicId") UUID recipeCategoryPublicId,
+    public ResponseEntity<RecipeAPI> createRecipe(@PathVariable("publicId") UUID recipeCategoryPublicId,
             @RequestBody CreateRecipeAPI createRecipeAPI) {
 
         try {
             RecipeCategoryEntity category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
-            RecipeEntity recipe = recipeService.createRecipe(createRecipeAPI);
-            category.addRecipe(recipe);
+            RecipeEntity recipeEntity = recipeService.createRecipe(createRecipeAPI);
+
+            for (int i = 0; i < createRecipeAPI.products().size(); i++) {
+                ProductEntity productEntity = productRepository.findByPublicId(createRecipeAPI.products().get(i).publicId()).orElseThrow();
+                int amount = createRecipeAPI.amounts().get(i);
+                recipeEntity.addProduct(productEntity, amount);
+            }
+
+            category.addRecipe(recipeEntity);
             recipeCategoryService.updateRecipeCategory(category);
 
-            return new ResponseEntity<RecipeEntity>(recipe,
+            return new ResponseEntity<RecipeAPI>(toRecipeAPI(recipeEntity),
                     HttpStatus.OK);
         } catch (Exception ex) {
             this.logger.error(ex.getMessage(), ex);

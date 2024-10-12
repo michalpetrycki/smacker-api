@@ -95,4 +95,18 @@ public class ProductService {
                 Optional.ofNullable(product.getFats()),
                 Optional.ofNullable(product.getProteins()));
     }
+
+    public static ProductEntity toProductEntity(ProductAPI productAPI) {
+        ProductEntity.ProductEntityBuilder<?, ?> productEntity = ProductEntity.builder();
+        productEntity.name(productAPI.name());
+        productEntity.publicId(productAPI.publicId());
+        productEntity.updateTimestamp(productAPI.lastUpdate());
+        productAPI.description().ifPresent(productEntity::description);
+        productAPI.carbs().ifPresent(productEntity::carbs);
+        productAPI.fiber().ifPresent(productEntity::fiber);
+        productAPI.fats().ifPresent(productEntity::fats);
+        productAPI.proteins().ifPresent(productEntity::proteins);
+        return productEntity.build();
+    }
+
 }

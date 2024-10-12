@@ -60,7 +60,7 @@ public class RecipeCategoryService {
         return categoryBuilder.build();
     }
 
-    public static RecipeCategoryAPI toRecipeCategoryAPI(RecipeCategoryEntity categoryEntity) {
+    static RecipeCategoryAPI toRecipeCategoryAPI(RecipeCategoryEntity categoryEntity) {
         RecipeCategoryAPI categoryAPI = new RecipeCategoryAPI(
                 categoryEntity.getName(),
                 categoryEntity.getPublicId(),
