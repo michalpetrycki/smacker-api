@@ -11,6 +11,8 @@ import io.coolinary.smacker.product.ProductAPI;
 import io.coolinary.smacker.product.ProductService;
 import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
+import io.coolinary.smacker.tool.ToolAPI;
+import io.coolinary.smacker.tool.ToolService;
 
 @Service
 public class RecipeService {
@@ -73,6 +75,10 @@ public class RecipeService {
         List<ProductAPI> products = recipeEntity.getProducts().stream().map(recipeProduct -> recipeProduct.getProduct())
                 .toList().stream().map(ProductService::toProductAPI).collect(Collectors.toList());
 
+        List<ToolAPI> tools = recipeEntity.getTools().stream().map(recipeTool -> recipeTool.getTool()).toList().stream()
+                .map(ToolService::toToolAPI)
+                .collect(Collectors.toList());
+
         RecipeAPI recipeAPI = new RecipeAPI(
                 recipeEntity.getName(),
                 recipeEntity.getDescription(),
@@ -81,6 +87,7 @@ public class RecipeService {
                 recipeEntity.getCreationTimestamp(),
                 recipeEntity.getUpdateTimestamp(),
                 products,
+                tools,
                 List.of(1, 2, 3));
         return recipeAPI;
     }

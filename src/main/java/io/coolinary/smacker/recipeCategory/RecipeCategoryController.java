@@ -15,6 +15,9 @@ import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeService;
 import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
+import io.coolinary.smacker.tool.ToolAPI;
+import io.coolinary.smacker.tool.ToolEntity;
+import io.coolinary.smacker.tool.ToolRepository;
 import io.coolinary.smacker.shared.Routes;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,8 @@ public class RecipeCategoryController {
     private RecipeCategoryService recipeCategoryService;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ToolRepository toolRepository;
     private final Logger logger = LoggerFactory.getLogger(RecipeCategoryController.class);
 
     @PostMapping(Routes.RECIPE_CATEGORIES)
@@ -67,9 +72,15 @@ public class RecipeCategoryController {
             RecipeEntity recipeEntity = recipeService.createRecipe(createRecipeAPI);
 
             for (int i = 0; i < createRecipeAPI.products().size(); i++) {
-                ProductEntity productEntity = productRepository.findByPublicId(createRecipeAPI.products().get(i).publicId()).orElseThrow();
+                ProductEntity productEntity = productRepository
+                        .findByPublicId(createRecipeAPI.products().get(i).publicId()).orElseThrow();
                 int amount = createRecipeAPI.amounts().get(i);
                 recipeEntity.addProduct(productEntity, amount);
+            }
+
+            for (ToolAPI tool : createRecipeAPI.tools()) {
+                ToolEntity toolEntity = toolRepository.findByPublicId(tool.publicId()).orElseThrow();
+                recipeEntity.addTool(toolEntity);
             }
 
             category.addRecipe(recipeEntity);

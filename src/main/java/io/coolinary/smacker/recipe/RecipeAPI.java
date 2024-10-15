@@ -5,15 +5,17 @@ import java.util.List;
 import java.util.UUID;
 
 import io.coolinary.smacker.product.ProductAPI;
+import io.coolinary.smacker.tool.ToolAPI;
 
 public record RecipeAPI(
-        String name,
-        String description,
-        List<String> steps,
-        UUID publicId,
-        Instant creationTimestamp,
-        Instant updateTimestamp,
-        List<ProductAPI> products,
-        List<Integer> amounts) {
+                String name,
+                String description,
+                List<String> steps,
+                UUID publicId,
+                Instant creationTimestamp,
+                Instant updateTimestamp,
+                List<ProductAPI> products,
+                List<ToolAPI> tools,
+                List<Integer> amounts) {
 
 }

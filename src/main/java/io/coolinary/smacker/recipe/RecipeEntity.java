@@ -1,15 +1,17 @@
 package io.coolinary.smacker.recipe;
 
 import java.util.Set;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,8 +29,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import io.coolinary.smacker.product.ProductEntity;
 import io.coolinary.smacker.recipeCategory.RecipeCategoryEntity;
-import io.coolinary.smacker.shared.RecipeProduct;
 import io.coolinary.smacker.shared.UpdatableEntity;
+import io.coolinary.smacker.tool.ToolEntity;
 
 @Entity
 @SuperBuilder
@@ -46,10 +48,21 @@ public class RecipeEntity extends UpdatableEntity {
     private String name;
     @Column(name = "description")
     private String description;
+    // @Column(name = "public_identifier")
+    // private UUID publicId;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<RecipeProduct> products = new ArrayList<>();
+    private Set<RecipeProduct> products = new HashSet<>();
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @Builder.Default
+    private Set<RecipeTool> tools = new HashSet<>();
+
+    @ManyToMany
+    @Builder.Default
+    @JoinTable(name = "tool_to_recipe", joinColumns = @JoinColumn(name = "recipe_id"), inverseJoinColumns = @JoinColumn(name = "tool_id"))
+    private Set<ToolEntity> recipeTools = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -68,6 +81,12 @@ public class RecipeEntity extends UpdatableEntity {
         recipeProduct.setAmount(amount);
         products.add(recipeProduct);
         product.getRecipes().add(recipeProduct);
+    }
+
+    public void addTool(ToolEntity tool) {
+        RecipeTool recipeTool = new RecipeTool(this, tool);
+        tools.add(recipeTool);
+        tool.getRecipeTools().add(recipeTool);
     }
 
     public void removeProduct(RecipeProduct product) {
@@ -91,16 +110,19 @@ public class RecipeEntity extends UpdatableEntity {
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(id);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (!(o instanceof RecipeEntity))
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
-        return id != null && id.equals(((RecipeEntity) o).getId());
+        }
+        RecipeEntity recipe = (RecipeEntity) o;
+        return Objects.equals(id, recipe.id);
     }
 
     @Override

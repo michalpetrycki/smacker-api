@@ -16,11 +16,13 @@ public class ToolService {
     }
 
     // ToolEntity getById(Long id) {
-    //     return this.toolRepository.findById(id).orElseThrow(() -> new ToolNotFoundException(id));
+    // return this.toolRepository.findById(id).orElseThrow(() -> new
+    // ToolNotFoundException(id));
     // }
 
     ToolEntity createTool(ToolCreateAPI toolCreateAPI) {
-        ToolEntity toolEntity = toToolEntity(toolCreateAPI);
+        ToolAPI toolAPI = new ToolAPI(UUID.randomUUID(), toolCreateAPI.name());
+        ToolEntity toolEntity = toToolEntity(toolAPI);
         toolEntity.setPublicId(UUID.randomUUID());
         return this.toolRepository.save(toolEntity);
     }
@@ -44,11 +46,11 @@ public class ToolService {
         return true;
     }
 
-    ToolEntity toToolEntity(ToolCreateAPI toolCreateAPI) {
-        return ToolEntity.builder().toolName(toolCreateAPI.name()).build();
+    public static ToolEntity toToolEntity(ToolAPI toolAPI) {
+        return ToolEntity.builder().toolName(toolAPI.name()).publicId(toolAPI.publicId()).build();
     }
 
-    static ToolAPI toToolAPI(ToolEntity toolEntity) {
+    public static ToolAPI toToolAPI(ToolEntity toolEntity) {
         return new ToolAPI(
                 toolEntity.getPublicId(),
                 toolEntity.getToolName());

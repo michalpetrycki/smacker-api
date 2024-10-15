@@ -1,17 +1,18 @@
-package io.coolinary.smacker.shared;
+package io.coolinary.smacker.recipe;
 
 import java.util.Objects;
 
+import io.coolinary.smacker.shared.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RecipeProductId implements Serializable {
+public class RecipeToolId implements Serializable {
 
     private Long recipeId;
 
-    private Long productId;
+    private Long toolId;
 
     @Override
     public boolean equals(Object o) {
@@ -21,14 +22,14 @@ public class RecipeProductId implements Serializable {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        RecipeProductId that = (RecipeProductId) o;
+        RecipeToolId that = (RecipeToolId) o;
         return Objects.equals(recipeId, that.recipeId) &&
-                Objects.equals(productId, that.productId);
+                Objects.equals(toolId, that.toolId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(recipeId, productId);
+        return Objects.hash(recipeId, toolId);
     }
 
 }

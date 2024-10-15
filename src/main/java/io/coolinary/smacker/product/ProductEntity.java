@@ -3,15 +3,12 @@ package io.coolinary.smacker.product;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.coolinary.smacker.productCategory.ProductCategory;
-import io.coolinary.smacker.shared.RecipeProduct;
+import io.coolinary.smacker.recipe.RecipeProduct;
 import io.coolinary.smacker.shared.UpdatableEntity;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.*;
@@ -46,7 +43,7 @@ public class ProductEntity extends UpdatableEntity {
     @OneToMany(mappedBy = "product")
     @JsonIgnore
     @Builder.Default
-    private List<RecipeProduct> recipes = new ArrayList<>();
+    private Set<RecipeProduct> recipes = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -58,7 +55,7 @@ public class ProductEntity extends UpdatableEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id);
     }
 
     @Override
@@ -68,7 +65,7 @@ public class ProductEntity extends UpdatableEntity {
         if (o == null || getClass() != o.getClass())
             return false;
         ProductEntity product = (ProductEntity) o;
-        return Objects.equals(name, product.name);
+        return Objects.equals(id, product.id);
     }
 
     @Override

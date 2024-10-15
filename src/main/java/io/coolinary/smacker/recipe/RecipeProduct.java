@@ -1,20 +1,15 @@
-package io.coolinary.smacker.shared;
+package io.coolinary.smacker.recipe;
 
 import java.util.Objects;
 
 import io.coolinary.smacker.product.ProductEntity;
-import io.coolinary.smacker.recipe.RecipeEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -23,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 @Table(name = "product_to_recipe")
 @Getter
 @Setter
+@NoArgsConstructor
 @IdClass(RecipeProductId.class)
 public class RecipeProduct {
 
@@ -44,9 +40,6 @@ public class RecipeProduct {
     @ManyToOne
     @JoinColumn(name = "product_id", updatable = false, insertable = false, referencedColumnName = "id")
     private ProductEntity product;
-
-    public RecipeProduct() {
-    }
 
     @Override
     public boolean equals(Object o) {
