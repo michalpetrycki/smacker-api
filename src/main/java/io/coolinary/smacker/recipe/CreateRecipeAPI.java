@@ -6,11 +6,11 @@ import io.coolinary.smacker.product.ProductAPI;
 import io.coolinary.smacker.tool.ToolAPI;
 
 public record CreateRecipeAPI(
-        String name,
-        Optional<String> description,
-        ArrayList<ProductAPI> products,
-        ArrayList<Integer> amounts,
-        ArrayList<ToolAPI> tools,
-        ArrayList<String> steps) {
+                String name,
+                Optional<String> description,
+                ArrayList<ProductAPI> products,
+                ArrayList<Integer> amounts,
+                ArrayList<ToolAPI> tools,
+                ArrayList<RecipeStepAPI> steps) {
 
 }

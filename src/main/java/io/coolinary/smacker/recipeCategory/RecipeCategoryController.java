@@ -13,6 +13,8 @@ import io.coolinary.smacker.recipe.CreateRecipeAPI;
 import io.coolinary.smacker.recipe.RecipeAPI;
 import io.coolinary.smacker.recipe.RecipeEntity;
 import io.coolinary.smacker.recipe.RecipeService;
+import io.coolinary.smacker.recipe.RecipeStepAPI;
+import io.coolinary.smacker.recipe.RecipeStepEntity;
 import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
 import io.coolinary.smacker.tool.ToolAPI;
@@ -43,10 +45,6 @@ public class RecipeCategoryController {
     private RecipeService recipeService;
     @Autowired
     private RecipeCategoryService recipeCategoryService;
-    @Autowired
-    private ProductRepository productRepository;
-    @Autowired
-    private ToolRepository toolRepository;
     private final Logger logger = LoggerFactory.getLogger(RecipeCategoryController.class);
 
     @PostMapping(Routes.RECIPE_CATEGORIES)
@@ -70,22 +68,8 @@ public class RecipeCategoryController {
         try {
             RecipeCategoryEntity category = recipeCategoryService.getByPublicId(recipeCategoryPublicId);
             RecipeEntity recipeEntity = recipeService.createRecipe(createRecipeAPI);
-
-            for (int i = 0; i < createRecipeAPI.products().size(); i++) {
-                ProductEntity productEntity = productRepository
-                        .findByPublicId(createRecipeAPI.products().get(i).publicId()).orElseThrow();
-                int amount = createRecipeAPI.amounts().get(i);
-                recipeEntity.addProduct(productEntity, amount);
-            }
-
-            for (ToolAPI tool : createRecipeAPI.tools()) {
-                ToolEntity toolEntity = toolRepository.findByPublicId(tool.publicId()).orElseThrow();
-                recipeEntity.addTool(toolEntity);
-            }
-
             category.addRecipe(recipeEntity);
             recipeCategoryService.updateRecipeCategory(category);
-
             return new ResponseEntity<RecipeAPI>(toRecipeAPI(recipeEntity),
                     HttpStatus.OK);
         } catch (Exception ex) {

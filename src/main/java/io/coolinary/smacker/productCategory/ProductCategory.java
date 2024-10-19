@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,6 +44,7 @@ public class ProductCategory extends UpdatableEntity {
     })
     @JoinTable(name = "product_to_category", joinColumns = { @JoinColumn(name = "category_id") }, inverseJoinColumns = {
             @JoinColumn(name = "product_id") })
+    @Builder.Default
     private Set<ProductEntity> products = new HashSet<ProductEntity>();
 
     public void addProduct(ProductEntity product) {

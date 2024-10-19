@@ -1,7 +1,6 @@
 package io.coolinary.smacker.recipe;
 
 import java.util.Set;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -72,6 +71,10 @@ public class RecipeEntity extends UpdatableEntity {
     @Builder.Default
     private Set<RecipeCategoryEntity> categories = new HashSet<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "recipeEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RecipeStepEntity> steps = new HashSet<RecipeStepEntity>();
+
     public void addProduct(ProductEntity product, int amount) {
         RecipeProduct recipeProduct = new RecipeProduct();
         recipeProduct.setProduct(product);
@@ -87,6 +90,16 @@ public class RecipeEntity extends UpdatableEntity {
         RecipeTool recipeTool = new RecipeTool(this, tool);
         tools.add(recipeTool);
         tool.getRecipeTools().add(recipeTool);
+    }
+
+    public void addStep(RecipeStepEntity step) {
+        steps.add(step);
+        step.setRecipeEntity(this);
+    }
+
+    public void removeStep(RecipeStepEntity step) {
+        steps.remove(step);
+        step.setRecipeEntity(null);
     }
 
     public void removeProduct(RecipeProduct product) {

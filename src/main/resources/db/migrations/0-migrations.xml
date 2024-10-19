@@ -277,6 +277,29 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="1.24" author="mpetrycki">
+        <createTable tableName="recipe_steps">
+
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                    primaryKeyName="recipe_steps_id_pk" />
+            </column>
+
+            <column name="recipe_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="recipe_fk"
+                    references="recipe(id)" />
+            </column>
+
+            <column name="step_order" type="bigint">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="step_text" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+
+        </createTable>
+    </changeSet>
     <!-- 
     
     <changeSet id="1.19" author="mpetrycki"></changeSet>

@@ -8,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.coolinary.smacker.product.ProductAPI;
+import io.coolinary.smacker.product.ProductEntity;
+import io.coolinary.smacker.product.ProductRepository;
 import io.coolinary.smacker.product.ProductService;
 import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
 import io.coolinary.smacker.tool.ToolAPI;
+import io.coolinary.smacker.tool.ToolEntity;
+import io.coolinary.smacker.tool.ToolRepository;
 import io.coolinary.smacker.tool.ToolService;
 
 @Service
@@ -19,6 +23,10 @@ public class RecipeService {
 
     @Autowired
     RecipeRepository recipeRepository;
+    @Autowired
+    private ProductRepository productRepository;
+    @Autowired
+    private ToolRepository toolRepository;
 
     List<RecipeEntity> getAll() {
         return this.recipeRepository.findAll();
@@ -39,10 +47,30 @@ public class RecipeService {
     }
 
     public RecipeEntity createRecipe(CreateRecipeAPI createRecipeAPI) {
-        RecipeEntity.RecipeEntityBuilder<?, ?> recipeEntity = RecipeEntity.builder()
-                .name(createRecipeAPI.name());
-        createRecipeAPI.description().ifPresent(recipeEntity::description);
-        return this.recipeRepository.save(recipeEntity.build());
+        RecipeEntity recipeEntity = RecipeEntity.builder()
+                .name(createRecipeAPI.name()).build();
+        createRecipeAPI.description().ifPresent(recipeEntity::setDescription);
+
+        for (int i = 0; i < createRecipeAPI.products().size(); i++) {
+            ProductEntity productEntity = productRepository
+                    .findByPublicId(createRecipeAPI.products().get(i).publicId()).orElseThrow();
+            int amount = createRecipeAPI.amounts().get(i);
+            recipeEntity.addProduct(productEntity, amount);
+        }
+
+        for (ToolAPI tool : createRecipeAPI.tools()) {
+            ToolEntity toolEntity = toolRepository.findByPublicId(tool.publicId()).orElseThrow();
+            recipeEntity.addTool(toolEntity);
+        }
+
+        for (RecipeStepAPI step : createRecipeAPI.steps()) {
+            RecipeStepEntity stepEntity = new RecipeStepEntity();
+            stepEntity.setStepOrder(step.order());
+            stepEntity.setStepText(step.text());
+            recipeEntity.addStep(stepEntity);
+        }
+
+        return this.recipeRepository.save(recipeEntity);
     }
 
     RecipeEntity updateRecipe(RecipeEntity recipe) {
@@ -70,6 +98,10 @@ public class RecipeService {
         return recipeBuilder.build();
     }
 
+    static RecipeStepAPI toRecipeStepAPI(RecipeStepEntity step) {
+        return new RecipeStepAPI(step.getStepOrder(), step.getStepText());
+    }
+
     public static RecipeAPI toRecipeAPI(RecipeEntity recipeEntity) {
 
         List<ProductAPI> products = recipeEntity.getProducts().stream().map(recipeProduct -> recipeProduct.getProduct())
@@ -79,10 +111,13 @@ public class RecipeService {
                 .map(ToolService::toToolAPI)
                 .collect(Collectors.toList());
 
+        List<RecipeStepAPI> steps = recipeEntity.getSteps().stream().map(RecipeService::toRecipeStepAPI)
+                .collect(Collectors.toList());
+
         RecipeAPI recipeAPI = new RecipeAPI(
                 recipeEntity.getName(),
                 recipeEntity.getDescription(),
-                List.of("Step1", "Step2", "Step3"),
+                steps,
                 recipeEntity.getPublicId(),
                 recipeEntity.getCreationTimestamp(),
                 recipeEntity.getUpdateTimestamp(),
