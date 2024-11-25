@@ -9,4 +9,6 @@ public interface ToolRepository extends JpaRepository<ToolEntity, Long> {
 
     Optional<ToolEntity> findByPublicId(UUID publicId);
 
+    void deleteByPublicId(UUID publicId);
+
 }

@@ -30,7 +30,7 @@ public class ToolControllerTest {
     // private MockMvc mockMvc;
 
     @MockBean
-    private ToolService toolService;
+    private ToolServiceImpl toolService;
 
     // private ObjectMapper objectMapper = new ObjectMapper();
 

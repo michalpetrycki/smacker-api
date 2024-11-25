@@ -1,6 +1,7 @@
 package io.coolinary.smacker.tool;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -15,18 +16,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
-import static io.coolinary.smacker.tool.ToolService.toToolAPI;
+import static io.coolinary.smacker.tool.ToolServiceImpl.toToolAPI;
 
+import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.Routes;
+import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
 
 @RestController
 @RequestMapping("/api")
 public class ToolController {
 
-    private final ToolService toolService;
+    private final ToolServiceImpl toolService;
     private final Logger logger = LoggerFactory.getLogger(ToolController.class);
 
-    ToolController(ToolService toolService) {
+    ToolController(ToolServiceImpl toolService) {
         this.toolService = toolService;
     }
 
@@ -37,10 +40,12 @@ public class ToolController {
                 tools.stream().map(tool -> toToolAPI(tool)).collect(Collectors.toList()), HttpStatus.OK);
     }
 
-    // @GetMapping(Routes.TOOLS + Routes.ID)
-    // public ResponseEntity<ToolAPI> getTool(@PathVariable("id") Long id) {
-    //     return new ResponseEntity<ToolAPI>(toToolAPI(this.toolService.getById(id)), HttpStatus.OK);
-    // }
+    @GetMapping(Routes.TOOLS + Routes.ID)
+    public ResponseEntity<ToolAPI> getTool(@PathVariable("publicId") UUID publicId) {
+        ToolEntity toolEntity = this.toolService.getByPublicId(publicId)
+                .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.TOOL));
+        return new ResponseEntity<ToolAPI>(toToolAPI(toolEntity), HttpStatus.OK);
+    }
 
     @PostMapping(Routes.TOOLS)
     public ResponseEntity<ToolAPI> createTool(@RequestBody ToolCreateAPI newTool) {
@@ -55,20 +60,22 @@ public class ToolController {
     }
 
     // @PutMapping(Routes.TOOLS + Routes.ID)
-    // public ResponseEntity<ToolEntity> replaceTool(@RequestBody ToolEntity newTool, @PathVariable("id") Long id) {
+    // public ResponseEntity<ToolEntity> replaceTool(@RequestBody ToolEntity
+    // newTool, @PathVariable("id") Long id) {
 
-    //     ToolEntity toolToUpdate = this.toolService.getById(id);
-    //     if (toolToUpdate == null) {
-    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    //     }
+    // ToolEntity toolToUpdate = this.toolService.getById(id);
+    // if (toolToUpdate == null) {
+    // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    // }
 
-    //     toolToUpdate.setToolName(newTool.getToolName());
-    //     return new ResponseEntity<ToolEntity>(this.toolService.updateTool(id, toolToUpdate), HttpStatus.OK);
+    // toolToUpdate.setToolName(newTool.getToolName());
+    // return new ResponseEntity<ToolEntity>(this.toolService.updateTool(id,
+    // toolToUpdate), HttpStatus.OK);
     // }
 
     @DeleteMapping(Routes.TOOLS + Routes.ID)
-    public ResponseEntity<Boolean> deleteTool(@PathVariable("id") Long id) {
-        return new ResponseEntity<Boolean>(this.toolService.deleteTool(id), HttpStatus.OK);
+    public ResponseEntity<Boolean> deleteTool(@PathVariable("publicIc") UUID publicId) {
+        return new ResponseEntity<Boolean>(this.toolService.deleteTool(publicId), HttpStatus.OK);
     }
 
     @DeleteMapping(Routes.TOOLS)
