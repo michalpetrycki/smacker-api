@@ -20,7 +20,7 @@ public class RestServiceCorsApplication {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost", "http://localhost:4200", "http://140.238.95.251",
                                 "http://140.238.95.251:4200")
-                        .allowedMethods("*");
+                        .allowedMethods("*").allowedHeaders("*");
             }
         };
     }
