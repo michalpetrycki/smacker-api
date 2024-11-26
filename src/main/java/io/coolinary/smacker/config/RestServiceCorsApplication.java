@@ -18,8 +18,8 @@ public class RestServiceCorsApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost", "http://localhost:4200", "140.238.95.251",
-                                "140.238.95.251:4200")
+                        .allowedOrigins("http://localhost", "http://localhost:4200", "http://140.238.95.251",
+                                "http://140.238.95.251:4200")
                         .allowedMethods("*");
             }
         };
