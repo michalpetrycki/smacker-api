@@ -24,10 +24,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class ProductEntity extends UpdatableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "product_name")
+    @Column(name = "product_name", unique = true, nullable = false)
     private String name;
     @Column(name = "description")
     private String description;
@@ -45,17 +42,14 @@ public class ProductEntity extends UpdatableEntity {
     @Builder.Default
     private Set<RecipeProduct> recipes = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    }, mappedBy = "products")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "products")
     @JsonIgnore
     @Builder.Default
     private Set<ProductCategory> categories = new HashSet<>();
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(this.publicId);
     }
 
     @Override
@@ -64,8 +58,8 @@ public class ProductEntity extends UpdatableEntity {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        ProductEntity product = (ProductEntity) o;
-        return Objects.equals(id, product.id);
+        ProductEntity that = (ProductEntity) o;
+        return Objects.equals(this.publicId, that.publicId);
     }
 
     @Override

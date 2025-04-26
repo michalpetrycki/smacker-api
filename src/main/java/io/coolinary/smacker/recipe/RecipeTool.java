@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import io.coolinary.smacker.tool.ToolEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -24,11 +25,11 @@ public class RecipeTool {
     }
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private RecipeEntity recipe;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ToolEntity tool;
 
     @Override

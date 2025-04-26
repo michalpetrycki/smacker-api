@@ -2,9 +2,11 @@ package io.coolinary.smacker.shared;
 
 import java.time.Instant;
 
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,10 +18,11 @@ import lombok.experimental.SuperBuilder;
 @MappedSuperclass
 @SuperBuilder
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class UpdatableEntity extends BaseEntity {
 
-    @UpdateTimestamp
-    @Column(name = "update_timestamp")
-    private Instant updateTimestamp;
+    @LastModifiedDate
+    @Column(name = "update_timestamp", nullable = false)
+    protected Instant updateTimestamp;
 
 }

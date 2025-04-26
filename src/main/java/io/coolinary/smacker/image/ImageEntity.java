@@ -2,7 +2,6 @@ package io.coolinary.smacker.image;
 
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.UUID;
 
 import io.coolinary.smacker.shared.UpdatableEntity;
 import jakarta.persistence.Column;
@@ -10,6 +9,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,20 +24,19 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "image", uniqueConstraints = {@UniqueConstraint(columnNames = "image_url"), @UniqueConstraint(columnNames = "public_identifier")})
 public class ImageEntity extends UpdatableEntity {
 
-    private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "image_name")
     private String imageName;
     @Column(name = "image_url")
     private String url;
     @Column(name = "creation_timestamp")
     private Instant creationTimestamp;
+    @Lob
     @Column(name = "image_data", length = 1000)
     private byte[] data;
-    @Column(name = "public_identifier")
-    private UUID publicId;
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -2,6 +2,7 @@ package io.coolinary.smacker.tool;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -33,16 +33,10 @@ import io.coolinary.smacker.shared.UpdatableEntity;
 @NoArgsConstructor
 public class ToolEntity extends UpdatableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "public_identifier")
-    private UUID publicId;
-    // @NaturalId
-    @Column(name = "tool_name")
+    @Column(name = "tool_name", unique = true, nullable = false)
     private String toolName;
 
-    @OneToMany(mappedBy = "tool")
+    @OneToMany(mappedBy = "tool", fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default
     private Set<RecipeTool> recipeTools = new HashSet<>();

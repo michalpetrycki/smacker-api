@@ -1,68 +1,93 @@
 package io.coolinary.smacker.tool;
 
-import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
-import io.coolinary.smacker.shared.ElementNotFoundException;
-import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @Service
 public class ToolServiceImpl implements ToolService {
 
-    @Autowired
-    ToolRepository toolRepository;
+	@Autowired
+	ToolRepository toolRepository;
 
-    public List<ToolEntity> getAll() {
-        return this.toolRepository.findAll();
-    }
+	public List<ToolEntity> getAll() {
+		return this.toolRepository.findAll().stream().sorted(Comparator.comparingLong(ToolEntity::getId))
+				.collect(Collectors.toList());
+	}
 
-    public Optional<ToolEntity> getByPublicId(UUID publicId) {
-        return this.toolRepository.findByPublicId(publicId);
-    }
+	public Page<ToolEntity> getPaginated(Integer pageNo, Integer pageSize, String sortBy, String sortDirection,
+			String filter) {
+		int pIdx = pageNo != null ? pageNo : 0;
+		int pSize = pageSize != null ? pageSize : 10;
+		Sort sort = (sortBy != null)
+				? Sort.by(Sort.Direction.fromString(sortDirection), sortBy)
+				: Sort.unsorted();
+		PageRequest pageable = PageRequest.of(pIdx, pSize, sort);
 
-    public ToolEntity createTool(ToolCreateAPI toolCreateAPI) {
-        ToolAPI toolAPI = new ToolAPI(UUID.randomUUID(), toolCreateAPI.name());
-        ToolEntity toolEntity = toToolEntity(toolAPI);
-        toolEntity.setPublicId(UUID.randomUUID());
-        return this.toolRepository.save(toolEntity);
-    }
+		if (filter != null && !filter.isBlank()) {
+			System.out.println(
+					"pageNo: " + pageNo + ", pageSize: " + pageSize + ", sortBy: " + sortBy + ", sortDirection: "
+							+ sortDirection + ", filter: " + filter);
+			return toolRepository.findByToolNameContainingIgnoreCase(filter, pageable);
+		} else {
+			System.out.println(
+					"pageNo: " + pageNo + ", pageSize: " + pageSize + ", sortBy: " + sortBy + ", sortDirection: "
+							+ sortDirection);
+			return toolRepository.findAll(pageable);
+		}
 
-    public ToolEntity updateTool(UUID publicId, ToolAPI toolAPI) {
-        ToolEntity toolEntity = this.toolRepository.findByPublicId(publicId)
-                .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.TOOL));
-        toolEntity.setToolName(toolAPI.name());
-        toolEntity.setUpdateTimestamp(Instant.now());
-        return this.toolRepository.save(toolEntity);
-    }
+	}
 
-    public Boolean deleteTool(UUID publicId) {
-        try {
-            this.toolRepository.deleteByPublicId(publicId);
-            return true;
-        } catch (IllegalArgumentException ex) {
-            return false;
-        }
+	public Optional<ToolEntity> getByPublicId(UUID publicId) {
+		return this.toolRepository.findByPublicId(publicId);
+	}
 
-    }
+	public ToolEntity createTool(ToolCreateAPI toolCreateAPI) {
+		ToolAPI toolAPI = new ToolAPI(UUID.randomUUID(), toolCreateAPI.name());
+		ToolEntity toolEntity = toToolEntity(toolAPI);
+		return this.toolRepository.save(toolEntity);
+	}
 
-    public Boolean deleteAllTools() {
-        this.toolRepository.deleteAll();
-        return true;
-    }
+	public ToolEntity updateTool(ToolEntity toolEntity, ToolAPI toolAPI) {
+		toolEntity.setToolName(toolAPI.name());
+		return this.toolRepository.save(toolEntity);
+	}
 
-    public static ToolEntity toToolEntity(ToolAPI toolAPI) {
-        return ToolEntity.builder().toolName(toolAPI.name()).publicId(toolAPI.publicId()).build();
-    }
+	@Transactional
+	public Boolean deleteTool(UUID publicId) {
+		try {
+			this.toolRepository.deleteByPublicId(publicId);
+			return true;
+		} catch (IllegalArgumentException ex) {
+			return false;
+		}
 
-    public static ToolAPI toToolAPI(ToolEntity toolEntity) {
-        return new ToolAPI(
-                toolEntity.getPublicId(),
-                toolEntity.getToolName());
-    }
+	}
+
+	public Boolean deleteAllTools() {
+		this.toolRepository.deleteAll();
+		return true;
+	}
+
+	public static ToolEntity toToolEntity(ToolAPI toolAPI) {
+		return ToolEntity.builder().toolName(toolAPI.name()).publicId(toolAPI.publicId()).build();
+	}
+
+	public static ToolAPI toToolAPI(ToolEntity toolEntity) {
+		return new ToolAPI(
+				toolEntity.getPublicId(),
+				toolEntity.getToolName());
+	}
 
 }

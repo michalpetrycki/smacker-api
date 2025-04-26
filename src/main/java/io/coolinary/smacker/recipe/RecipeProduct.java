@@ -5,12 +5,12 @@ import java.util.Objects;
 import io.coolinary.smacker.product.ProductEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 
@@ -23,12 +23,12 @@ import jakarta.persistence.JoinColumn;
 public class RecipeProduct {
 
     @Id
-    @Column(name = "product_id")
-    private Long productId;
-
-    @Id
     @Column(name = "recipe_id")
     private Long recipeId;
+
+    @Id
+    @Column(name = "product_id")
+    private Long productId;
 
     @Column(name = "amount")
     private int amount = 0;
@@ -52,6 +52,10 @@ public class RecipeProduct {
         RecipeProduct that = (RecipeProduct) o;
         return Objects.equals(recipe, that.recipe) &&
                 Objects.equals(product, that.product);
+    }
+
+    public boolean isProductEqual(ProductEntity product) {
+        return this.product != null & this.product.equals(product);
     }
 
     @Override

@@ -6,6 +6,7 @@ public class Routes {
     public static final String ID = "/{id}";
     public static final String PID = "/{publicId}";
     public static final String TOOLS = "/tools";
+    public static final String TOOLS_ALL = TOOLS + ALL;
     public static final String IMAGES = "/images";
     public static final String RECIPES = "/recipes";
     public static final String PRODUCTS = "/products";

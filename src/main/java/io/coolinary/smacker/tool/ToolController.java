@@ -1,11 +1,14 @@
 package io.coolinary.smacker.tool;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import static io.coolinary.smacker.tool.ToolServiceImpl.toToolAPI;
 
 import io.coolinary.smacker.shared.ElementNotFoundException;
+import io.coolinary.smacker.shared.PaginatedResponse;
 import io.coolinary.smacker.shared.Routes;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
@@ -33,11 +38,28 @@ public class ToolController {
         this.toolService = toolService;
     }
 
-    @GetMapping(Routes.TOOLS)
-    ResponseEntity<List<ToolAPI>> getAll() {
-        List<ToolEntity> tools = this.toolService.getAll();
+    @GetMapping(Routes.TOOLS_ALL)
+    ResponseEntity<List<ToolAPI>> getAll(@RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize) {
+
         return new ResponseEntity<List<ToolAPI>>(
-                tools.stream().map(tool -> toToolAPI(tool)).collect(Collectors.toList()), HttpStatus.OK);
+                this.toolService.getAll().stream().map(tool -> toToolAPI(tool)).collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping(Routes.TOOLS)
+    ResponseEntity<PaginatedResponse<ToolAPI>> getPaginated(@RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) String filter) {
+
+        Page<ToolEntity> page = this.toolService.getPaginated(pageNo, pageSize, sortBy, sortDirection, filter);
+        List<ToolAPI> tools = page.getContent().stream()
+                .map(tool -> toToolAPI(tool))
+                .collect(Collectors.toList());
+
+        PaginatedResponse<ToolAPI> resp = new PaginatedResponse<ToolAPI>(tools, page.getTotalElements());
+        return new ResponseEntity<PaginatedResponse<ToolAPI>>(resp, HttpStatus.OK);
     }
 
     @GetMapping(Routes.TOOLS + Routes.ID)
@@ -50,31 +72,26 @@ public class ToolController {
     @PostMapping(Routes.TOOLS)
     public ResponseEntity<ToolAPI> createTool(@RequestBody ToolCreateAPI newTool) {
 
-        try {
-            return new ResponseEntity<ToolAPI>(toToolAPI(this.toolService.createTool(newTool)), HttpStatus.CREATED);
-        } catch (Exception ex) {
-            this.logger.error(ex.getMessage(), ex);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<ToolAPI>(toToolAPI(this.toolService.createTool(newTool)), HttpStatus.CREATED);
 
     }
 
-    // @PutMapping(Routes.TOOLS + Routes.ID)
-    // public ResponseEntity<ToolEntity> replaceTool(@RequestBody ToolEntity
-    // newTool, @PathVariable("id") Long id) {
+    @PutMapping(Routes.TOOLS + Routes.PID)
+    public ResponseEntity<ToolAPI> replaceTool(@RequestBody ToolAPI toolAPI,
+            @PathVariable("publicId") UUID publicId) {
 
-    // ToolEntity toolToUpdate = this.toolService.getById(id);
-    // if (toolToUpdate == null) {
-    // return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    // }
+        Optional<ToolEntity> toolToUpdate = this.toolService.getByPublicId(publicId);
+        if (!toolToUpdate.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-    // toolToUpdate.setToolName(newTool.getToolName());
-    // return new ResponseEntity<ToolEntity>(this.toolService.updateTool(id,
-    // toolToUpdate), HttpStatus.OK);
-    // }
+        return new ResponseEntity<ToolAPI>(toToolAPI(this.toolService.updateTool(
+                toolToUpdate.get(), toolAPI)), HttpStatus.OK);
+    }
 
-    @DeleteMapping(Routes.TOOLS + Routes.ID)
-    public ResponseEntity<Boolean> deleteTool(@PathVariable("publicIc") UUID publicId) {
+    @DeleteMapping(Routes.TOOLS + Routes.PID)
+    public ResponseEntity<Boolean> deleteTool(@PathVariable("publicId") UUID publicId) {
+        System.out.println("elo");
         return new ResponseEntity<Boolean>(this.toolService.deleteTool(publicId), HttpStatus.OK);
     }
 

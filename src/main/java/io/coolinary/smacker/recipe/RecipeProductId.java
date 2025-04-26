@@ -3,15 +3,18 @@ package io.coolinary.smacker.recipe;
 import java.util.Objects;
 
 import io.coolinary.smacker.shared.Serializable;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RecipeProductId implements Serializable {
 
     private Long recipeId;
-
     private Long productId;
 
     @Override

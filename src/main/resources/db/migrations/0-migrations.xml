@@ -300,9 +300,130 @@
 
         </createTable>
     </changeSet>
+
+    <changeSet id="1.25" author="mpetrycki">
+        <addColumn tableName="tool_to_recipe">
+            <column name="description" type="varchar(80)"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1.26" author="mpetrycki">
+        <addColumn tableName="product_category">
+            <column name="description" type="varchar(300)"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1.27" author="mpetrycki">
+        <addColumn tableName="recipe">
+            <column name="comments" type="text"></column>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="recipe_to_category"
+            baseColumnNames="recipe_id"
+            referencedTableName="recipe"
+            referencedColumnNames="id"
+            constraintName="fk_recipe_to_recipe_category" 
+        />
+
+        <addForeignKeyConstraint baseTableName="recipe_to_category"
+            baseColumnNames="category_id"
+            referencedTableName="recipe_category"
+            referencedColumnNames="id"
+            constraintName="fk_category_to_recipe_category" 
+        />
+
+        <modifyDataType tableName="product" columnName="description" newDataType="VARCHAR(500)" />
+
+        <sql>
+            ALTER TABLE product ADD CONSTRAINT check_positive_nutritional_values CHECK ((carbs >= 0 OR carbs IS NULL) AND
+                            (proteins >= 0 OR proteins IS NULL) AND
+                            (fats >= 0 OR fats IS NULL) AND
+                            (fiber >= 0 OR fiber IS NULL))
+        </sql>
+
+        <modifyDataType tableName="recipe_steps" columnName="step_text" newDataType="VARCHAR(500)" />
+        <modifyDataType tableName="recipe_steps" columnName="step_order" newDataType="SMALLINT" />
+
+        <addForeignKeyConstraint baseTableName="recipe_steps"
+            baseColumnNames="recipe_id"
+            referencedTableName="recipe"
+            referencedColumnNames="id"
+            constraintName="fk_recipe_steps_recipe"
+        />
+
+        <addUniqueConstraint tableName="image"
+            columnNames="image_url"
+            constraintName="unique_image_path"
+        />
+
+        <addUniqueConstraint tableName="product"
+            columnNames="product_name"
+            constraintName="unique_product_name"
+        />
+
+        <addUniqueConstraint tableName="product_category"
+            columnNames="product_category_name"
+            constraintName="unique_product_category_name"
+        />
+        
+        <addUniqueConstraint tableName="recipe"
+            columnNames="recipe_name"
+            constraintName="unique_recipe_name"
+        />
+
+        <addUniqueConstraint tableName="recipe_category"
+            columnNames="recipe_category_name"
+            constraintName="unique_recipe_category_name"
+        />
+
+        <addUniqueConstraint tableName="tool"
+            columnNames="tool_name"
+            constraintName="unique_tool_name"
+        />
+
+        <addUniqueConstraint tableName="recipe_steps"
+            columnNames="step_order, recipe_id"
+            constraintName="unique_step_order_per_recipe"
+        />
+
+        <addUniqueConstraint tableName="image"
+            columnNames="public_identifier"
+            constraintName="unique_image_public_identifier"
+        />
+
+        <addUniqueConstraint tableName="product"
+            columnNames="public_identifier"
+            constraintName="unique_product_public_identifier"
+        />
+
+        <addUniqueConstraint tableName="product_category"
+            columnNames="public_identifier"
+            constraintName="unique_product_category_public_identifier"
+        />
+
+        <addUniqueConstraint tableName="recipe"
+            columnNames="public_identifier"
+            constraintName="unique_recipe_public_identifier"
+        />
+
+        <addUniqueConstraint tableName="recipe_category"
+            columnNames="public_identifier"
+            constraintName="unique_recipe_category_public_identifier"
+        />
+
+        <addUniqueConstraint tableName="tool"
+            columnNames="public_identifier"
+            constraintName="unique_tool_public_identifier"
+        />
+
+        <addColumn tableName="image">
+            <column name="update_timestamp" type="datetime" />
+        </addColumn>
+
+    </changeSet>
     <!-- 
     
-    <changeSet id="1.19" author="mpetrycki"></changeSet>
+    
     <changeSet id="1.20" author="mpetrycki"></changeSet>
     <changeSet id="1.21" author="mpetrycki"></changeSet>
     <changeSet id="1.22" author="mpetrycki"></changeSet>

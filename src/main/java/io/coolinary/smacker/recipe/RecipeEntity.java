@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -40,15 +41,10 @@ import io.coolinary.smacker.tool.ToolEntity;
 @NoArgsConstructor
 public class RecipeEntity extends UpdatableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     @Column(name = "recipe_name")
     private String name;
     @Column(name = "description")
     private String description;
-    // @Column(name = "public_identifier")
-    // private UUID publicId;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     @Builder.Default
@@ -79,8 +75,6 @@ public class RecipeEntity extends UpdatableEntity {
         RecipeProduct recipeProduct = new RecipeProduct();
         recipeProduct.setProduct(product);
         recipeProduct.setRecipe(this);
-        recipeProduct.setProductId(product.getId());
-        recipeProduct.setRecipeId(this.getId());
         recipeProduct.setAmount(amount);
         products.add(recipeProduct);
         product.getRecipes().add(recipeProduct);
@@ -102,22 +96,18 @@ public class RecipeEntity extends UpdatableEntity {
         step.setRecipeEntity(null);
     }
 
-    public void removeProduct(RecipeProduct product) {
+    public void removeProduct(RecipeProduct recipeProduct) {
 
-        for (Iterator<RecipeProduct> iterator = products.iterator(); iterator.hasNext();) {
+        products.removeIf(product -> recipeProduct.getRecipe().equals(this) &&
+                recipeProduct.isProductEqual(recipeProduct.getProduct()));
 
-            RecipeProduct recipeProduct = iterator.next();
-
-            if (recipeProduct.getRecipe().equals(this) && recipeProduct.getProduct().equals(product)) {
-
-                iterator.remove();
+        products.forEach(product -> {
+            if (recipeProduct.isProductEqual(product.getProduct())) {
                 recipeProduct.getProduct().getRecipes().remove(recipeProduct);
                 recipeProduct.setRecipe(null);
                 recipeProduct.setProduct(null);
-
             }
-
-        }
+        });
 
     }
 
