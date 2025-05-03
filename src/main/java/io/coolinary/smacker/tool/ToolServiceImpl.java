@@ -21,6 +21,10 @@ public class ToolServiceImpl implements ToolService {
 	@Autowired
 	ToolRepository toolRepository;
 
+	public Optional<ToolEntity> getByPublicId(UUID publicId) {
+		return this.toolRepository.findByPublicId(publicId);
+	}
+
 	public List<ToolEntity> getAll() {
 		return this.toolRepository.findAll().stream().sorted(Comparator.comparingLong(ToolEntity::getId))
 				.collect(Collectors.toList());
@@ -47,10 +51,6 @@ public class ToolServiceImpl implements ToolService {
 			return toolRepository.findAll(pageable);
 		}
 
-	}
-
-	public Optional<ToolEntity> getByPublicId(UUID publicId) {
-		return this.toolRepository.findByPublicId(publicId);
 	}
 
 	public ToolEntity createTool(ToolCreateAPI toolCreateAPI) {

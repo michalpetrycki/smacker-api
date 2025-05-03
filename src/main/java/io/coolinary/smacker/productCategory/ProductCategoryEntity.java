@@ -3,7 +3,6 @@ package io.coolinary.smacker.productCategory;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 import io.coolinary.smacker.product.ProductEntity;
 import io.coolinary.smacker.shared.UpdatableEntity;
@@ -11,12 +10,10 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,10 +27,11 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductCategory extends UpdatableEntity {
+@Table(name = "product_category")
+public class ProductCategoryEntity extends UpdatableEntity {
 
     @Column(name = "product_category_name")
-    private String name;
+    private String categoryName;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -65,7 +63,7 @@ public class ProductCategory extends UpdatableEntity {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        ProductCategory that = (ProductCategory) o;
+        ProductCategoryEntity that = (ProductCategoryEntity) o;
         return Objects.equals(publicId, that.publicId);
     }
 
@@ -76,7 +74,7 @@ public class ProductCategory extends UpdatableEntity {
 
     @Override
     public String toString() {
-        return "ProductCategory [id=" + id + ", name=" + name + "]";
+        return "ProductCategory [id=" + id + ", name=" + categoryName + "]";
     }
 
 }

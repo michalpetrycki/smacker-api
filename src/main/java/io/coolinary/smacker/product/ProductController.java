@@ -1,11 +1,14 @@
 package io.coolinary.smacker.product;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
+import io.coolinary.smacker.shared.ElementNotFoundException;
+import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
+import io.coolinary.smacker.shared.PaginatedResponse;
 import io.coolinary.smacker.shared.Routes;
 
 import org.springframework.http.HttpStatus;
@@ -15,83 +18,82 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import io.coolinary.smacker.productCategory.ProductCategory;
-import io.coolinary.smacker.productCategory.ProductCategoryService;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import static io.coolinary.smacker.product.ProductService.toProductAPI;
+import static io.coolinary.smacker.product.ProductServiceImpl.toProductAPI;
 
 @RestController
 @RequestMapping("/api")
 public class ProductController {
 
-    @Autowired
-    private ProductService productService;
-    @Autowired
-    private ProductCategoryService productCategoryService;
+    private final ProductServiceImpl productService;
 
-    private Logger logger = LoggerFactory.getLogger(ProductController.class);
-
-    @GetMapping(Routes.PRODUCTS)
-    ResponseEntity<List<ProductAPI>> getAll() {
-
-        List<ProductEntity> products = this.productService.getAll();
-        return new ResponseEntity<List<ProductAPI>>(
-                products.stream().map(product -> toProductAPI(product)).collect(Collectors.toList()), HttpStatus.OK);
+    ProductController(ProductServiceImpl productService) {
+        this.productService = productService;
     }
 
-    // @GetMapping(Routes.PRODUCTS + Routes.ID)
-    // public ResponseEntity<ProductAPI> getProduct(@PathVariable("id") Long id) {
-    // return new
-    // ResponseEntity<ProductAPI>(toProductAPI(productService.getById(id)),
-    // HttpStatus.OK);
-    // }
+    @GetMapping(Routes.PRODUCTS_ALL)
+    ResponseEntity<List<ProductAPI>> getAll() {
+
+        return new ResponseEntity<List<ProductAPI>>(
+                productService.getAll().stream().map(product -> toProductAPI(product))
+                        .collect(Collectors.toList()),
+                HttpStatus.OK);
+    }
+
+    @GetMapping(Routes.PRODUCTS)
+    ResponseEntity<PaginatedResponse<ProductAPI>> getPaginated(@RequestParam(required = false) Integer pageNo,
+            @RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) String filter) {
+
+        Page<ProductEntity> page = productService.getPaginated(pageNo, pageSize, sortBy, sortDirection, filter);
+        List<ProductAPI> products = page.getContent().stream()
+                .map(product -> toProductAPI(product))
+                .collect(Collectors.toList());
+
+        PaginatedResponse<ProductAPI> resp = new PaginatedResponse<ProductAPI>(products, page.getTotalElements());
+        return new ResponseEntity<PaginatedResponse<ProductAPI>>(resp, HttpStatus.OK);
+    }
+
+    @GetMapping(Routes.PRODUCTS + Routes.PID)
+    public ResponseEntity<ProductAPI> getProduct(@PathVariable("publicId") UUID publicId) {
+        ProductEntity productEntity = productService.getByPublicId(publicId)
+                .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.PRODUCT));
+        return new ResponseEntity<ProductAPI>(toProductAPI(productEntity), HttpStatus.OK);
+    }
 
     @PostMapping(Routes.PRODUCTS)
     public ResponseEntity<ProductAPI> createProduct(@RequestBody ProductCreateAPI newProduct) {
-
-        try {
-            return new ResponseEntity<ProductAPI>(toProductAPI(productService.createProduct(newProduct)),
-                    HttpStatus.CREATED);
-        } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+        return new ResponseEntity<ProductAPI>(toProductAPI(productService.createProduct(newProduct)),
+                HttpStatus.CREATED);
     }
 
-    // @GetMapping(Routes.PRODUCTS + Routes.ID + Routes.PRODUCT_CATEGORIES)
-    // public ResponseEntity<List<ProductCategory>>
-    // getAllCategoriesByProductId(@PathVariable("publicId") UUID publicId) {
-    // if (!productService.existsById(productId)) {
-    // throw new ElementNotFoundException(productId, "product");
-    // }
-    // return new ResponseEntity<List<ProductCategory>>(
-    // productCategoryService.getCategoriesByProductId(productId),
-    // HttpStatus.CREATED);
-    // }
+    @PutMapping(Routes.PRODUCTS + Routes.PID)
+    public ResponseEntity<ProductAPI> replaceProduct(@RequestBody ProductAPI productAPI,
+            @PathVariable("publicId") UUID publicId) {
 
-    // @PutMapping(Routes.PRODUCTS + Routes.ID)
-    // public ResponseEntity<ProductAPI> updateProduct(@PathVariable("id") Long id,
-    // @RequestBody ProductAPI productAPI) {
-    // return new
-    // ResponseEntity<ProductAPI>(toProductAPI(productService.updateProduct(id,
-    // productAPI)),
-    // HttpStatus.OK);
-    // }
+        Optional<ProductEntity> productToUpdate = productService.getByPublicId(publicId);
+        if (!productToUpdate.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-    // @DeleteMapping(Routes.PRODUCTS + Routes.ID)
-    // public ResponseEntity<Boolean> deleteProduct(@PathVariable("id") Long id) {
-    // return new ResponseEntity<Boolean>(productService.deleteProduct(id),
-    // HttpStatus.NO_CONTENT);
-    // }
+        return new ResponseEntity<ProductAPI>(toProductAPI(productService.updateProduct(
+                productToUpdate.get(), productAPI)), HttpStatus.OK);
+    }
 
-    @DeleteMapping(Routes.PRODUCTS + Routes.ALL)
+    @DeleteMapping(Routes.PRODUCTS + Routes.PID)
+    public ResponseEntity<Boolean> deleteProduct(@PathVariable("publicId") UUID publicId) {
+        return new ResponseEntity<Boolean>(productService.deleteProduct(publicId), HttpStatus.OK);
+    }
+
+    @DeleteMapping(Routes.PRODUCTS)
     public ResponseEntity<Boolean> deleteAllProducts() {
-        return new ResponseEntity<Boolean>(productService.deleteAllProducts(),
-                HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Boolean>(productService.deleteAllProducts(), HttpStatus.OK);
     }
 
 }

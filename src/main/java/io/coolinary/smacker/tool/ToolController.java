@@ -5,9 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,15 +29,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ToolController {
 
     private final ToolServiceImpl toolService;
-    private final Logger logger = LoggerFactory.getLogger(ToolController.class);
 
     ToolController(ToolServiceImpl toolService) {
         this.toolService = toolService;
     }
 
     @GetMapping(Routes.TOOLS_ALL)
-    ResponseEntity<List<ToolAPI>> getAll(@RequestParam(required = false) Integer pageNo,
-            @RequestParam(required = false) Integer pageSize) {
+    ResponseEntity<List<ToolAPI>> getAll() {
 
         return new ResponseEntity<List<ToolAPI>>(
                 this.toolService.getAll().stream().map(tool -> toToolAPI(tool)).collect(Collectors.toList()),
@@ -62,7 +57,7 @@ public class ToolController {
         return new ResponseEntity<PaginatedResponse<ToolAPI>>(resp, HttpStatus.OK);
     }
 
-    @GetMapping(Routes.TOOLS + Routes.ID)
+    @GetMapping(Routes.TOOLS + Routes.PID)
     public ResponseEntity<ToolAPI> getTool(@PathVariable("publicId") UUID publicId) {
         ToolEntity toolEntity = this.toolService.getByPublicId(publicId)
                 .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.TOOL));
@@ -71,9 +66,7 @@ public class ToolController {
 
     @PostMapping(Routes.TOOLS)
     public ResponseEntity<ToolAPI> createTool(@RequestBody ToolCreateAPI newTool) {
-
         return new ResponseEntity<ToolAPI>(toToolAPI(this.toolService.createTool(newTool)), HttpStatus.CREATED);
-
     }
 
     @PutMapping(Routes.TOOLS + Routes.PID)
@@ -91,7 +84,6 @@ public class ToolController {
 
     @DeleteMapping(Routes.TOOLS + Routes.PID)
     public ResponseEntity<Boolean> deleteTool(@PathVariable("publicId") UUID publicId) {
-        System.out.println("elo");
         return new ResponseEntity<Boolean>(this.toolService.deleteTool(publicId), HttpStatus.OK);
     }
 

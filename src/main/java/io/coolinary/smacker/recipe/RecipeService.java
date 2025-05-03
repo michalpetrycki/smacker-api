@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import io.coolinary.smacker.product.ProductAPI;
 import io.coolinary.smacker.product.ProductEntity;
 import io.coolinary.smacker.product.ProductRepository;
-import io.coolinary.smacker.product.ProductService;
+import io.coolinary.smacker.product.ProductServiceImpl;
 import io.coolinary.smacker.shared.ElementNotFoundException;
 import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
 import io.coolinary.smacker.tool.ToolAPI;
@@ -105,7 +105,7 @@ public class RecipeService {
     public static RecipeAPI toRecipeAPI(RecipeEntity recipeEntity) {
 
         List<ProductAPI> products = recipeEntity.getProducts().stream().map(recipeProduct -> recipeProduct.getProduct())
-                .toList().stream().map(ProductService::toProductAPI).collect(Collectors.toList());
+                .toList().stream().map(ProductServiceImpl::toProductAPI).collect(Collectors.toList());
 
         List<ToolAPI> tools = recipeEntity.getTools().stream().map(recipeTool -> recipeTool.getTool()).toList().stream()
                 .map(ToolServiceImpl::toToolAPI)

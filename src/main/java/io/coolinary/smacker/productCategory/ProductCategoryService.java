@@ -1,53 +1,30 @@
 package io.coolinary.smacker.productCategory;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 
 @Service
-public class ProductCategoryService {
+public interface ProductCategoryService {
 
-    @Autowired
-    ProductCategoryRepository productCategoryRepository;
+        List<ProductCategoryEntity> getAll();
 
-    List<ProductCategory> getAll() {
-        return this.productCategoryRepository.findAll();
-    }
+        Page<ProductCategoryEntity> getPaginated(Integer pageNo, Integer pageSize, String sortBy, String sortOrder,
+                        String filter);
 
-    // public boolean existsById(Long id) {
-    //     return this.productCategoryRepository.findById(id)
-    //             .orElseThrow(() -> new ProductCategoryNotFoundException(id)) != null;
-    // }
+        Optional<ProductCategoryEntity> getByPublicId(UUID publicId);
 
-    // ProductCategory getById(Long id) {
-    //     return this.productCategoryRepository.findById(id).orElseThrow(() -> new ProductCategoryNotFoundException(id));
-    // }
+        ProductCategoryEntity createCategory(ProductCategoryCreateAPI createAPI);
 
-    public List<ProductCategory> getCategoriesByProductId(Long productId) {
-        return this.productCategoryRepository.findCategoriesByProductsId(productId);
-    }
+        ProductCategoryEntity updateCategory(ProductCategoryEntity productCategoryEntity,
+                        ProductCategoryAPI productCategoryAPI) throws DataIntegrityViolationException;
 
-    ProductCategory createProductCategory(ProductCategory productCategory) {
-        return this.productCategoryRepository.save(productCategory);
-    }
+        Boolean deleteCategory(UUID publicId);
 
-    ProductCategory updateProductCategory(Long id, ProductCategory productCategory) {
-        return this.productCategoryRepository.save(productCategory);
-    }
-
-    Boolean deleteProductCategory(Long id) {
-        try {
-            this.productCategoryRepository.deleteById(id);
-            return true;
-        } catch (IllegalArgumentException ex) {
-            return false;
-        }
-
-    }
-
-    Boolean deleteAllProductCategories() {
-        this.productCategoryRepository.deleteAll();
-        return true;
-    }
+        Boolean deleteAllCategories();
 
 }

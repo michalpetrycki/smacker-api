@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.coolinary.smacker.productCategory.ProductCategory;
+import io.coolinary.smacker.productCategory.ProductCategoryEntity;
 import io.coolinary.smacker.recipe.RecipeProduct;
 import io.coolinary.smacker.shared.UpdatableEntity;
 
@@ -25,7 +25,7 @@ import lombok.experimental.SuperBuilder;
 public class ProductEntity extends UpdatableEntity {
 
     @Column(name = "product_name", unique = true, nullable = false)
-    private String name;
+    private String productName;
     @Column(name = "description")
     private String description;
     @Column
@@ -45,7 +45,7 @@ public class ProductEntity extends UpdatableEntity {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "products")
     @JsonIgnore
     @Builder.Default
-    private Set<ProductCategory> categories = new HashSet<>();
+    private Set<ProductCategoryEntity> categories = new HashSet<>();
 
     @Override
     public int hashCode() {
@@ -64,7 +64,8 @@ public class ProductEntity extends UpdatableEntity {
 
     @Override
     public String toString() {
-        return "Product [id=" + id + ", name=" + name + ", description=" + description + ", carbs=" + carbs + ", fats="
+        return "Product [id=" + id + ", name=" + productName + ", description=" + description + ", carbs=" + carbs
+                + ", fats="
                 + fats + ", fiber=" + fiber + ", proteins=" + proteins + "]";
     }
 

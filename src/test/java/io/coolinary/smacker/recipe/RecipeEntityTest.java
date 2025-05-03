@@ -33,7 +33,7 @@ class RecipeEntityTest {
                 .build();
 
         product = ProductEntity.builder()
-                .name("Pasta")
+                .productName("Pasta")
                 .description("Spaghetti for Carbonara")
                 .build();
 
@@ -47,7 +47,7 @@ class RecipeEntityTest {
         recipeRepository.save(recipe);
 
         assertThat(recipe.getProducts()).hasSize(1);
-        assertThat(recipe.getProducts().iterator().next().getProduct().getName()).isEqualTo("Pasta");
+        assertThat(recipe.getProducts().iterator().next().getProduct().getProductName()).isEqualTo("Pasta");
         assertThat(recipe.getProducts().iterator().next().getAmount()).isEqualTo(200);
     }
 

@@ -19,6 +19,7 @@ public class ElementNotFoundException extends RuntimeException {
     public enum EntityType {
         IMAGE("image"),
         PRODUCT("product"),
+        PRODUCT_CATEGORY("product category"),
         RECIPE("recipe"),
         RECIPE_CATEGORY("recipe category"),
         TOOL("tool");
