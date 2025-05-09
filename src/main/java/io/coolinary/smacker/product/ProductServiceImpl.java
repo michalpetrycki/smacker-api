@@ -1,8 +1,10 @@
 package io.coolinary.smacker.product;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import io.coolinary.smacker.productCategory.ProductCategoryAPI;
+import io.coolinary.smacker.productCategory.ProductCategoryEntity;
 import io.coolinary.smacker.productCategory.ProductCategoryRepository;
 import jakarta.transaction.Transactional;
 import static io.coolinary.smacker.productCategory.ProductCategoryServiceImpl.toProductCategoryEntity;
@@ -71,6 +75,17 @@ public class ProductServiceImpl implements ProductService {
                 productCreateAPI.proteins(),
                 productCreateAPI.categories());
         ProductEntity productEntity = toProductEntity(productAPI);
+
+        Set<ProductCategoryEntity> categories = new HashSet<>(
+                productCategoryRepository.findAllByPublicIdIn(
+                        productAPI.categories().stream()
+                                .map(ProductCategoryAPI::publicId)
+                                .collect(Collectors.toList())));
+        for (ProductCategoryEntity category : categories) {
+            category.addProduct(productEntity);
+        }
+
+        productEntity.setCategories(categories);
         return this.productRepository.save(productEntity);
     }
 
@@ -112,8 +127,6 @@ public class ProductServiceImpl implements ProductService {
                 .fiber(productAPI.fiber().get())
                 .fats(productAPI.fats().get())
                 .proteins(productAPI.proteins().get())
-                .categories(productAPI.categories().stream().map(category -> toProductCategoryEntity(category))
-                        .collect(Collectors.toSet()))
                 .build();
     }
 

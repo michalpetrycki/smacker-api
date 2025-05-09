@@ -43,15 +43,20 @@ public class GlobalExceptionHandler {
 
         this.logger.error(ex.getMessage());
 
-        String entity = "";
+        String entity = "CustomEntity";
 
         if (ex.getCause() != null && ex.getCause().getMessage().contains("tool_tool_name_key")) {
-            entity = "tool";
+            entity = "Tool";
         }
+
+        if (ex.getCause() != null && ex.getCause().getMessage().contains("unique_product_name")) {
+            entity = "Product";
+        }
+
         ErrorMessage message = new ErrorMessage(
                 HttpStatus.CONFLICT.value(),
                 new Date(),
-                "Tool with given name already exists",
+                entity + " with given name already exists",
                 request.getDescription(false), entity);
         return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
     }
