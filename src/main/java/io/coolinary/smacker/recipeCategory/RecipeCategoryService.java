@@ -1,72 +1,31 @@
 package io.coolinary.smacker.recipeCategory;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import io.coolinary.smacker.shared.ElementNotFoundException;
-import io.coolinary.smacker.shared.ElementNotFoundException.EntityType;
-import jakarta.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 
 @Service
-@Transactional
-public class RecipeCategoryService {
+public interface RecipeCategoryService {
 
-    @Autowired
-    RecipeCategoryRepository recipeCategoryRepository;
+        List<RecipeCategoryEntity> getAll();
 
-    List<RecipeCategoryEntity> getAll() {
-        return this.recipeCategoryRepository.findAll();
-    }
+        Page<RecipeCategoryEntity> getPaginated(Integer pageNo, Integer pageSize, String sortBy, String sortOrder,
+                        String filter);
 
-    public boolean existsByPublicId(UUID publicId) {
-        return this.recipeCategoryRepository.findByPublicId(publicId)
-                .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.RECIPE_CATEGORY)) != null;
-    }
+        Optional<RecipeCategoryEntity> getByPublicId(UUID publicId);
 
-    public RecipeCategoryEntity getByPublicId(UUID publicId) {
-        return this.recipeCategoryRepository.findByPublicId(publicId)
-                .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.RECIPE_CATEGORY));
-    }
+        RecipeCategoryEntity createCategory(RecipeCategoryCreateAPI createAPI);
 
-    public List<RecipeCategoryEntity> getCategoriesByRecipePublicId(UUID recipePublicId) {
-        return this.recipeCategoryRepository.findCategoriesByRecipesPublicId(recipePublicId);
-    }
+        RecipeCategoryEntity updateCategory(RecipeCategoryEntity recipeCategoryEntity,
+                        RecipeCategoryAPI recipeCategoryAPI) throws DataIntegrityViolationException;
 
-    RecipeCategoryEntity createRecipeCategory(CreateRecipeCategoryAPI createCategoryAPI) {
-        RecipeCategoryEntity categoryEntity = RecipeCategoryEntity.builder().name(createCategoryAPI.name()).build();
-        return this.recipeCategoryRepository.save(categoryEntity);
-    }
+        Boolean deleteCategory(UUID publicId);
 
-    public RecipeCategoryEntity updateRecipeCategory(RecipeCategoryEntity recipeCategory) {
-        return this.recipeCategoryRepository.save(recipeCategory);
-    }
-
-    Long deleteRecipeCategoryByPublicId(UUID publicId) {
-        return this.recipeCategoryRepository.deleteByPublicId(publicId);
-    }
-
-    Boolean deleteAllRecipeCategories() {
-        this.recipeCategoryRepository.deleteAll();
-        return true;
-    }
-
-    static RecipeCategoryEntity toRecipeCategoryEntity(RecipeCategoryAPI categoryAPI) {
-        RecipeCategoryEntity.RecipeCategoryEntityBuilder<?, ?> categoryBuilder = RecipeCategoryEntity.builder();
-        categoryBuilder.name(categoryAPI.name());
-        return categoryBuilder.build();
-    }
-
-    static RecipeCategoryAPI toRecipeCategoryAPI(RecipeCategoryEntity categoryEntity) {
-        RecipeCategoryAPI categoryAPI = new RecipeCategoryAPI(
-                categoryEntity.getName(),
-                categoryEntity.getPublicId(),
-                categoryEntity.getCreationTimestamp(),
-                categoryEntity.getUpdateTimestamp());
-        return categoryAPI;
-    }
+        Boolean deleteAllCategories();
 
 }

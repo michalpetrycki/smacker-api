@@ -18,6 +18,7 @@ public class Routes {
     public static final String TOOLS_ALL = TOOLS + ALL;
     public static final String PRODUCTS_ALL = PRODUCTS + ALL;
     public static final String PRODUCT_CATEGORIES_ALL = PRODUCT_CATEGORIES + ALL;
+    public static final String RECIPE_CATEGORIES_ALL = RECIPE_CATEGORIES + ALL;
 
     public static final String RECIPE_PUBLIC_ID = "/{recipePublicId}";
     public static final String RECIPE_CATEGORY_PUBLIC_ID = "/{recipeCategoryPublicId}";

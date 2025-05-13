@@ -37,7 +37,7 @@ public class RecipeCategoryEntity extends UpdatableEntity {
 
     private @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
     @Column(name = "recipe_category_name")
-    private String name;
+    private String categoryName;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST,
@@ -67,7 +67,7 @@ public class RecipeCategoryEntity extends UpdatableEntity {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((categoryName == null) ? 0 : categoryName.hashCode());
         return result;
     }
 
@@ -85,17 +85,17 @@ public class RecipeCategoryEntity extends UpdatableEntity {
                 return false;
         } else if (!id.equals(other.id))
             return false;
-        if (name == null) {
-            if (other.name != null)
+        if (categoryName == null) {
+            if (other.categoryName != null)
                 return false;
-        } else if (!name.equals(other.name))
+        } else if (!categoryName.equals(other.categoryName))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "RecipeCategory [id=" + id + ", name=" + name + "]";
+        return "RecipeCategory [id=" + id + ", categoryName=" + categoryName + "]";
     }
 
 }

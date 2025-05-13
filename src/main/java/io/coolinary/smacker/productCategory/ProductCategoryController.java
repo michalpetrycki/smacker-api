@@ -69,7 +69,7 @@ public class ProductCategoryController {
     }
 
     @GetMapping(Routes.PRODUCT_CATEGORIES + Routes.PID)
-    public ResponseEntity<ProductCategoryAPI> getTool(@PathVariable("publicId") UUID publicId) {
+    public ResponseEntity<ProductCategoryAPI> getProductCategory(@PathVariable("publicId") UUID publicId) {
         ProductCategoryEntity productCategoryEntity = this.productCategoryService.getByPublicId(publicId)
                 .orElseThrow(() -> new ElementNotFoundException(publicId, EntityType.PRODUCT_CATEGORY));
         return new ResponseEntity<ProductCategoryAPI>(toProductCategoryAPI(productCategoryEntity), HttpStatus.OK);

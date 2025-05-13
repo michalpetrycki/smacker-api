@@ -25,11 +25,11 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     ProductCategoryRepository productCategoryRepository;
 
     public Optional<ProductCategoryEntity> getByPublicId(UUID publicId) {
-        return this.productCategoryRepository.findByPublicId(publicId);
+        return productCategoryRepository.findByPublicId(publicId);
     }
 
     public List<ProductCategoryEntity> getAll() {
-        return this.productCategoryRepository.findAll().stream()
+        return productCategoryRepository.findAll().stream()
                 .sorted(Comparator.comparingLong(ProductCategoryEntity::getId))
                 .collect(Collectors.toList());
     }
@@ -61,19 +61,19 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     public ProductCategoryEntity createCategory(ProductCategoryCreateAPI createAPI) {
         ProductCategoryAPI productCategoryAPI = new ProductCategoryAPI(UUID.randomUUID(), createAPI.name());
         ProductCategoryEntity productCategoryEntity = toProductCategoryEntity(productCategoryAPI);
-        return this.productCategoryRepository.save(productCategoryEntity);
+        return productCategoryRepository.save(productCategoryEntity);
     }
 
     public ProductCategoryEntity updateCategory(ProductCategoryEntity productCategoryEntity,
             ProductCategoryAPI productCategoryAPI) {
         productCategoryEntity.setCategoryName(productCategoryAPI.name());
-        return this.productCategoryRepository.save(productCategoryEntity);
+        return productCategoryRepository.save(productCategoryEntity);
     }
 
     @Transactional
     public Boolean deleteCategory(UUID publicId) {
         try {
-            this.productCategoryRepository.deleteByPublicId(publicId);
+            productCategoryRepository.deleteByPublicId(publicId);
             return true;
         } catch (IllegalArgumentException ex) {
             return false;
@@ -82,7 +82,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     }
 
     public Boolean deleteAllCategories() {
-        this.productCategoryRepository.deleteAll();
+        productCategoryRepository.deleteAll();
         return true;
     }
 
